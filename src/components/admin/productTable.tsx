@@ -16,6 +16,7 @@ const ProductTable: React.FC = () => {
        queryKey: ["productsadmin"],
        queryFn: async () => {
            const response = await client.models.Products.list();
+           console.log(response);
            if (response.errors) {
                console.log(response.errors);
            }
