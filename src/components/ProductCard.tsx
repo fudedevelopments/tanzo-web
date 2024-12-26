@@ -1,26 +1,19 @@
+import DisplayImage from "../utils/imageview";
 
 interface ProductCardProps {
-  design: string;
   title: string;
   price: string;
   salePrice: string;
-  imageUrl: string;
+  imagepath: string[] | any;
 }
 
-const ProductCard = ({ design, title, price, salePrice, imageUrl } : ProductCardProps) => {
+const ProductCard = ({  title, price, salePrice, imagepath } : ProductCardProps) => {
   return (
     <div className="max-w-xs mx-auto p-4 border rounded-lg shadow-lg bg-white">
       <div className="relative">
-        <img
-          src={imageUrl}
-          alt={title}
-          className="w-full h-60 object-cover rounded-md"
-        />
+       <DisplayImage path= {imagepath[0] } width={300} height={200} ></DisplayImage>
         <span className="absolute top-2 left-2 bg-yellow-400 text-sm px-2 py-1 font-bold rounded">
           Sale
-        </span>
-        <span className="absolute top-2 right-2 bg-black text-white px-2 py-1 text-sm rounded">
-          {design}
         </span>
       </div>
       <h3 className="mt-4 text-lg font-semibold text-center">{title}</h3>

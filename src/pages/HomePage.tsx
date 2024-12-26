@@ -1,42 +1,78 @@
-import Categories from "../components/Categories";
 import ProductListing from "../components/ProductsListing";
-import EngravedProductListing from "../components/EngravedProductList";
 import ScrollingBanner from "../components/ScrollingBanner";
-import TopNavigationBar from "../components/TopNavBar";
-import Footer from "../components/Footer";
-import { useAuthenticator } from '@aws-amplify/ui-react';
-import { useEffect, useState } from "react";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 
-const HomePage = () => {
-  const { authStatus, user, signOut } = useAuthenticator((context) => [context.authStatus, context.user]);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
+import { useQuery } from "@tanstack/react-query";
+import { client } from "../utils/client";
+import BenefitSection from "../components/benefitSection";
+import CategoryList from "../components/CategoriesList";
 
-  useEffect(() => {
-    if (authStatus !== "authenticated") {
-      const timer = setTimeout(() => {
-        setShowLoginPopup(true);
-      }, 3000);
-      return () => clearTimeout(timer); // Cleanup timeout if component unmounts
-    }
-  }, [authStatus]);
+const HomePage: React.FC = () => {
+
+  const {
+    data: products,
+    isLoading: isProductsLoading,
+    isError: isProductsError,
+  } = useQuery({
+    queryKey: ["homePageProducts"],
+    queryFn: async (): Promise<any> => {
+      const response = await client.models.Products.list({
+      });
+      const products = response.data;
+      if (!products) {
+        throw new Error("No products found");
+      }
+      return products;
+    },
+  });
+
+  const {
+    data: categories,
+    isLoading: isCategoriesLoading,
+    isError: isCategoriesError,
+  } = useQuery({
+    queryKey: ["homePageCategories"],
+    queryFn: async (): Promise<any> => {
+      const response = await client.models.Categories.list();
+      const categories = response.data;
+      if (!categories) {
+        throw new Error("No categories found");
+      }
+      return categories;
+    },
+  });
 
   return (
     <>
-      <TopNavigationBar username={authStatus === "authenticated" ? user.username : null} onSignOut={signOut} />
       <div className="mt-5" />
-      <ScrollingBanner />
-      <Categories />
-      <ProductListing />
-      <EngravedProductListing />
-      <Footer />
-
-      {/* Conditional rendering for login popup */}
-      {showLoginPopup && authStatus !== "authenticated" && (
-        <div className="login-popup">
-          <h2>Please Log In</h2>
-          <button onClick={() => setShowLoginPopup(false)}>Close</button>
-          {/* Include your login form or button to trigger login flow */}
-        </div>
+       
+      {isProductsLoading || isCategoriesLoading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" height="70vh">
+          <CircularProgress />
+        </Box>
+      ) : isProductsError || isCategoriesError ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="70vh"
+          textAlign="center"
+        >
+          <Typography variant="h6" color="error">
+            Something went wrong. Please contact support.
+          </Typography>
+        </Box>
+      ) : (
+        <>
+              <ScrollingBanner />
+              <CategoryList category={categories} />
+          <BenefitSection />
+          <ProductListing Products={products} />
+        </>
       )}
     </>
   );
