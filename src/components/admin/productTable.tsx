@@ -10,13 +10,15 @@ const ProductTable: React.FC = () => {
     const [showConfirm, setShowConfirm] = useState(false);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-  
      
     // Fetch product list using TanStack Query
     const { data: productLists, isLoading, isError } = useQuery({
        queryKey: ["productsadmin"],
        queryFn: async () => {
            const response = await client.models.Products.list();
+           if (response.errors) {
+               console.log(response.errors);
+           }
            return response.data;
        },
    })
