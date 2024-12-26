@@ -1,64 +1,55 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "../../utils/client";
 import { FaTrash } from "react-icons/fa";
 import DisplayImage from "../../utils/imageview";
 import { useNavigate } from "react-router-dom";
 
 const ProductTable: React.FC = () => {
-    const [productLists, setProductLists] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
     const [showConfirm, setShowConfirm] = useState(false);
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+  
+     
+    // Fetch product list using TanStack Query
+    const { data: productLists, isLoading, isError } = useQuery({
+       queryKey: ["productsadmin"],
+       queryFn: async () => {
+           const response = await client.models.Products.list();
+           return response.data;
+       },
+   })
 
-    interface Product {
-        id: string;
-        name: string;
-        actualPrice: number;
-        price: number;
-        description: string;
-        images: string[] | any;
-        category: string;
-    }
-
-    // Fetch product list
-    useEffect(() => {
-        const fetchProductList = async () => {
-            try {
-                const response = await client.models.Products.list();
-                const products = response.data;
-                setProductLists(products);
-            } catch (error) {
-                console.error("Error fetching product list:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProductList();
-    }, []);
-
-    // Handle delete confirmation
-    const handleDelete = async (productId: string) => {
-        try {
-            await client.models.Products.delete({ id: productId });
-            setProductLists((prev) => prev.filter((product) => product.id !== productId));
-            setShowConfirm(false);
-            setSelectedProduct(null);
-        } catch (error) {
-            console.error("Error deleting product:", error);
-        }
-    };
-
+    // Handle delete using TanStack Mutation
+    const deleteMutation = useMutation({
+       mutationKey : ["deleteproduct"],
+       mutationFn: async (productId: string) => {
+           const response = await client.models.Products.delete({ id: productId });
+           return response.data;
+       },
+       onSuccess: () => {
+           // Invalidate the query to refetch data after deletion
+           queryClient.invalidateQueries({
+               queryKey : ["productsadmin"]
+           });
+           setShowConfirm(false);
+       },
+    })
+    
     const truncateText = (text: string, maxLength: number) => {
         return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
                 <div className="loader border-t-4 border-blue-500 w-16 h-16 rounded-full animate-spin"></div>
             </div>
         );
+    }
+    if (isError) {
+        return <div>Error loading products</div>
     }
 
     return (
@@ -92,18 +83,18 @@ const ProductTable: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {productLists.map((product) => (
+                        {productLists?.map((product) => (
                             <React.Fragment key={product.id}>
                                 <tr
                                     className="cursor-pointer bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300"
-                                    onClick={() => navigate(`/product-view/${product.id}`)} // Navigate to product view page
+                                    onClick={() => navigate(`/product-view/${product.id}`)}
                                     style={{
-                                        marginBottom: "16px", // Add space between rows
-                                        padding: "10px 20px", // Add outside padding
+                                        marginBottom: "16px",
+                                        padding: "10px 20px",
                                     }}
                                 >
                                     <td className="py-4 px-4">
-                                        <DisplayImage path={product.images[0]} width={100} height={100}></DisplayImage>
+                                        <DisplayImage path={product.images![0] || ""} width={100} height={100}></DisplayImage>
                                     </td>
                                     <td className="py-4 px-4">{truncateText(product.name, 50)}</td>
                                     <td className="py-4 px-4">₹{product.actualPrice.toFixed(2)}</td>
@@ -112,7 +103,7 @@ const ProductTable: React.FC = () => {
                                         <button
                                             className="text-red-500 hover:text-red-700"
                                             onClick={(e) => {
-                                                e.stopPropagation(); // Prevent navigation on button click
+                                                e.stopPropagation();
                                                 setSelectedProduct(product);
                                                 setShowConfirm(true);
                                             }}
@@ -143,7 +134,7 @@ const ProductTable: React.FC = () => {
                             </button>
                             <button
                                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                onClick={() => handleDelete(selectedProduct.id)}
+                                onClick={() => deleteMutation.mutate(selectedProduct.id)}
                             >
                                 Delete
                             </button>

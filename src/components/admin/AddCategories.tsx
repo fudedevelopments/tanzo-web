@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { uploadData } from 'aws-amplify/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { client } from '../../utils/client';
-import { useQueryClient, useMutation } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 
 const AddCategory: React.FC = () => {
     const [categoryName, setCategoryName] = useState('');
     const [image, setImage] = useState<File | null>(null);
     const [loading, setLoading] = useState(false); // Loading state
-    const queryClient = useQueryClient();
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
