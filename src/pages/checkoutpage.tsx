@@ -25,7 +25,7 @@ const CheckoutPage = () => {
             });
             
             const jsonString = response.data;
-
+            console.log("pront this from the chckour")
             if (jsonString) { 
                 const parsedData = JSON.parse(jsonString.toString());
                 console.log(parsedData.payment_session_id);
