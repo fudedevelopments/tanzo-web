@@ -21,8 +21,10 @@ const HomePage: React.FC = () => {
     queryKey: ["homePageProducts"],
     queryFn: async (): Promise<any> => {
       const response = await client.models.Products.list({
+        
       });
       const products = response.data;
+      
       if (!products) {
         throw new Error("No products found");
       }
@@ -37,7 +39,8 @@ const HomePage: React.FC = () => {
   } = useQuery({
     queryKey: ["homePageCategories"],
     queryFn: async (): Promise<any> => {
-      const response = await client.models.Categories.list();
+      const response = await client.models.Categories.list(
+      );
       const categories = response.data;
       if (!categories) {
         throw new Error("No categories found");
@@ -68,8 +71,8 @@ const HomePage: React.FC = () => {
         </Box>
       ) : (
         <>
-              <ScrollingBanner />
-              <CategoryList category={categories} />
+          <ScrollingBanner />
+          <CategoryList category={categories} />
           <BenefitSection />
           <ProductListing Products={products} />
         </>

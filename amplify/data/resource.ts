@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import { createorder } from "../function/createorder/resources";
 
 const schema = a.schema({
 
@@ -35,6 +36,23 @@ const schema = a.schema({
     }).authorization((allow) => [
       allow.group('ADMINS')
     ]),
+
+  createOrderCF: a
+    .query()
+    .arguments({
+      order_amount: a.float().required(),
+      customerId : a.string().required(),
+      customerName : a.string().required(),
+      customerEmail : a.string().required(),
+      customerPhone : a.string().required(),
+    })
+    .returns(a.json())
+    .handler(a.handler.function(createorder))
+  .authorization(allow => [
+    allow.authenticated(),
+    allow.guest(),
+    allow.group('ADMINS')
+  ])
 
   
 });

@@ -16,6 +16,8 @@ import Layout from "./components/layout";
 import HomeLayout from "./components/admin/HomeLayout";
 import ProductListPage from "./pages/productListPage";
 import ProductView from "./components/productView";
+import CheckoutPage from "./pages/checkoutpage";
+
 
 
 
@@ -50,6 +52,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/productListPage/:categoryId" element={<ProductListPage />} />
           <Route path="/productview/:productId" element={<ProductView />} />
+          <Route path="/checkoutPage" element={<CheckoutPage />} />
         </Route>
         //appbar and fotter layout
 

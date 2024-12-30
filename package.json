@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.7.0",
     "@aws-amplify/ui-react-storage": "^3.5.0",
+    "@cashfreepayments/cashfree-js": "^1.0.5",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.8",
