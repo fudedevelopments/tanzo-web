@@ -1,5 +1,5 @@
 import { client } from '../utils/client.ts';
-import {cashfree}  from "../utils/cashfree.js";
+import {load} from "@cashfreepayments/cashfree-js"
 
 const CheckoutPage = () => {
 
@@ -34,6 +34,9 @@ const CheckoutPage = () => {
                     paymentSessionId: parsedData.payment_session_id,
                     redirectTarget: "_self"
                 }
+                const cashfree = await load({
+                    mode: "sandbox"
+                });
                 cashfree.checkout(checkoutoptions);
             } else {
                 console.error("Received null data from createOrderCF");
