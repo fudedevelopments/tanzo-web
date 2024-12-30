@@ -29,6 +29,7 @@ const CheckoutPage = () => {
             if (jsonString) { 
                 const parsedData = JSON.parse(jsonString.toString());
                 console.log(parsedData.payment_session_id);
+                console.log(parsedData);
                 let checkoutoptions = {
                     paymentSessionId: parsedData.payment_session_id,
                     redirectTarget: "_self"
