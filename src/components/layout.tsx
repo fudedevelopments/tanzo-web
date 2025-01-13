@@ -3,37 +3,60 @@ import { FaShoppingCart, FaBars, FaTimes, FaUser, FaTimesCircle } from 'react-ic
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import { Link, Outlet } from 'react-router-dom';
+import { useAuthenticator } from '@aws-amplify/ui-react';
+import { useQuery } from '@tanstack/react-query';
+import { client } from '../utils/client';
+import { fetchUserAttributes } from 'aws-amplify/auth';
 
 function AppBar() {
+    const { signOut, user } = useAuthenticator((context) => [context.user]);
     const [menuOpen, setMenuOpen] = useState(false);
     const [showAuthBar, setShowAuthBar] = useState(false);
     const auth = useSelector((state: RootState) => state.auth.isAuth);
-    const username = useSelector((state: RootState) => state.auth.username);
+
+    // Fetch customer data only if authenticated
+    const { data: customer, isLoading } = useQuery({
+      queryKey:  ['getAndCreateUser'],
+      queryFn: async() => {
+        const userAttributes = await fetchUserAttributes();
+        const { data: existingCustomer } = await client.models.Customer.get({
+            id: user.userId,
+        });
+
+        if (!existingCustomer) {
+            const { data: newCustomer } = await client.models.Customer.create({
+                id: userAttributes.sub,
+                email: userAttributes.email!,
+                name: userAttributes.name!,
+            });
+            return newCustomer;
+        }
+
+        return existingCustomer;
+    },
+});
 
     useEffect(() => {
         const closeAuthBar = (e: MouseEvent) => {
-            const target = e.target as HTMLElement | null; // Safely cast and handle possible null
+            const target = e.target as HTMLElement | null;
             if (target && !target.closest('.auth-dropdown')) {
                 setShowAuthBar(false);
             }
         };
+
         if (showAuthBar) {
             document.addEventListener('click', closeAuthBar);
         } else {
             document.removeEventListener('click', closeAuthBar);
         }
+
         return () => {
             document.removeEventListener('click', closeAuthBar);
         };
     }, [showAuthBar]);
 
-
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
-    };
-
-    const handleSignOut = () => {
-        // Logic to handle sign-out
     };
 
     return (
@@ -63,7 +86,8 @@ function AppBar() {
                         <FaShoppingCart className="w-6 h-6 cursor-pointer" />
                     </nav>
 
-                    <div className="relative auth-dropdown flex items-center space-x-4"> {/* Reduced space */}
+                    {/* Auth Dropdown */}
+                    <div className="relative auth-dropdown flex items-center space-x-4">
                         {auth ? (
                             <div className="flex items-center">
                                 <button
@@ -75,9 +99,13 @@ function AppBar() {
                                 {showAuthBar && (
                                     <div
                                         className="absolute right-0 top-full mt-2 bg-white text-black shadow-lg p-4 rounded-md space-y-2 z-50"
-                                    > {/* Ensures dropdown appears below the button */}
+                                    >
                                         <div className="flex justify-between items-center">
-                                            <p className="text-sm font-medium">{username}</p>
+                                            {isLoading ? (
+                                                <p className="text-sm font-medium">Loading...</p>
+                                            ) : (
+                                                <p className="text-sm font-medium">{customer?.email}</p>
+                                            )}
                                             <button
                                                 onClick={() => setShowAuthBar(false)}
                                                 className="text-gray-500 hover:text-gray-700"
@@ -86,7 +114,7 @@ function AppBar() {
                                             </button>
                                         </div>
                                         <button
-                                            onClick={handleSignOut}
+                                            onClick={signOut}
                                             className="bg-red-500 text-white py-2 px-4 rounded-md w-full"
                                         >
                                             Sign Out
@@ -102,7 +130,6 @@ function AppBar() {
                             </Link>
                         )}
                     </div>
-
                 </div>
 
                 {/* Mobile Menu */}

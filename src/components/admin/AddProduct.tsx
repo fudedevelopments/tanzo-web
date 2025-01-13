@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { Schema } from "../../../amplify/data/resource";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
+
 type Categories = Schema["Categories"]["type"];
 
 const ProductAddPage = () => {
     const navigate = useNavigate();
 
-    // Fetch categories using tanstack/react-query
+    
     const { data: categories, isLoading: categoriesLoading } = useQuery({
         queryKey: ["categories"],
         queryFn: async (): Promise<Categories[]> => {
@@ -28,6 +29,13 @@ const ProductAddPage = () => {
     const [description, setDescription] = useState<string>("");
     const [actualPrice, setActualPrice] = useState<number>();
     const [selectedcategory, setCategory] = useState<string>("");
+    const [isImageRequired, setIsImageRequired] = useState<boolean>(false);
+    const [noOfImagesRequired, setNoOfImagesRequired] = useState<number | null>(null);
+    const [isTextRequired, setIsTextRequired] = useState<boolean>(false);
+    const [isSpotifyRequired, setIsSpotifyRequired] = useState<boolean>(false);
+    const [cdescription, setCDescription] = useState<string>("");
+    const [cNotePoints, setCNotePoints] = useState<string>("");
+    const [pdimensions, setPDimensions] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -45,6 +53,8 @@ const ProductAddPage = () => {
     const handleRemoveImage = (index: number) => {
         setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     };
+
+   
 
     const uploadImagesMutation = useMutation({
         mutationFn: async (images: File[]): Promise<string[]> => {
@@ -70,7 +80,14 @@ const ProductAddPage = () => {
     const addProductMutation = useMutation({
         mutationFn: async (product: any) => {
             const response = await client.models.Products.create(product)
-            console.log(response);
+            return response.data;
+
+        },
+    });
+
+    const addcDetailsMutation = useMutation({
+        mutationFn: async (cdetails: any) => {
+            const response = await client.models.Cdetails.create(cdetails)
             return response.data;
 
         },
@@ -84,7 +101,7 @@ const ProductAddPage = () => {
             try {
                 const imagePaths = await uploadImagesMutation.mutateAsync(images);
 
-                await addProductMutation.mutateAsync({
+             const responseproduct =   await addProductMutation.mutateAsync({
                    name: name,
                    price: price,
                    actualPrice: actualPrice,
@@ -92,6 +109,17 @@ const ProductAddPage = () => {
                    images: imagePaths,
                    categoryId : selectedcategory
                 });
+
+                await addcDetailsMutation.mutateAsync({
+                          isImageRequired : isImageRequired,
+                          requiredImages: noOfImagesRequired,
+                          textRequired: isTextRequired,
+                          isSpotify: isSpotifyRequired,
+                          cdescription: cdescription,
+                          cNotePoints: cNotePoints,
+                          pDimensions: pdimensions,
+                          cId: responseproduct?.id
+                })
 
                 setLoading(false);
             } catch (error: any) {
@@ -221,6 +249,109 @@ const ProductAddPage = () => {
                             placeholder="Enter product description"
                         ></textarea>
                     </div>
+
+                    {/* //custom details */}
+                    <h1>Cutomization Details</h1>
+           
+
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">
+                            Is Image Required
+                        </label>
+                        <select
+                            value={isImageRequired.toString()}
+                            onChange={(e) => setIsImageRequired(e.target.value === "true")}
+                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        >
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+
+                    {isImageRequired && (
+                        <div>
+                            <label className="block text-gray-700 font-medium mb-2">
+                                Number of Images Required
+                            </label>
+                            <input
+                                type="number"
+                                value={noOfImagesRequired?.toString() || ""}
+                                onChange={(e) => setNoOfImagesRequired(parseFloat(e.target.value))}
+                                className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                placeholder="Enter number of images required"
+                            />
+                        </div>
+                    )}
+
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">
+                            Is Text required
+                        </label>
+                        <select
+                            value={isTextRequired.toString()}
+                            onChange={(e) => setIsTextRequired(e.target.value === "true")}
+                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        >
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+
+
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">
+                            Is Spotify Required
+                        </label>
+                        <select
+                            value={isSpotifyRequired.toString()}
+                            onChange={(e) => setIsSpotifyRequired(e.target.value === "true")}
+                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        >
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">
+                            Cdescription
+                        </label>
+                        <textarea
+                            value={cdescription}
+                            onChange={(e) => setCDescription(e.target.value)}
+                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            placeholder="Enter product description"
+                        ></textarea>
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">
+                           c NotePoints
+                        </label>
+                        <textarea
+                            value={cNotePoints}
+                            onChange={(e) => setCNotePoints(e.target.value)}
+                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            placeholder="Enter product description"
+                        ></textarea>
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">
+                            P Dimensions
+                        </label>
+                        <textarea
+                            value={pdimensions}
+                            onChange={(e) => setPDimensions(e.target.value)}
+                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            placeholder="Enter product description"
+                        ></textarea>
+                    </div>
+
+
+
+
+
                 </div>
 
                 <div className="mt-6">
@@ -249,7 +380,7 @@ const ProductAddPage = () => {
 
                 <button
                     className="w-full py-3 mt-4 bg-gradient-to-r from-gray-500 to-gray-700 text-white font-bold rounded-lg shadow-lg hover:from-gray-600 hover:to-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                    onClick={() => navigate("/admin-dashboard")}
+                    onClick={()=>{}}
                 >
                     Go to Dashboard
                 </button>

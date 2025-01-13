@@ -10,27 +10,33 @@ import { useQuery } from "@tanstack/react-query";
 import { client } from "../utils/client";
 import BenefitSection from "../components/benefitSection";
 import CategoryList from "../components/CategoriesList";
+import { useSelector } from "react-redux";
+import { RootState } from "../state/store";
+
 
 const HomePage: React.FC = () => {
 
+  const auth = useSelector((state: RootState) => state.auth.isAuth);
+
   const {
-    data: products,
+    data: homepageproducts,
     isLoading: isProductsLoading,
     isError: isProductsError,
   } = useQuery({
     queryKey: ["homePageProducts"],
     queryFn: async (): Promise<any> => {
-      const response = await client.models.Products.list({
-        
+      const response = await client.models.HomePageProducts.list({
+        authMode: auth ? "userPool" : "identityPool"
       });
-      const products = response.data;
-      
-      if (!products) {
+      const homepageproducts = response.data;
+      if (!homepageproducts) {
         throw new Error("No products found");
       }
-      return products;
+      return homepageproducts;
     },
   });
+
+  
 
   const {
     data: categories,
@@ -39,7 +45,9 @@ const HomePage: React.FC = () => {
   } = useQuery({
     queryKey: ["homePageCategories"],
     queryFn: async (): Promise<any> => {
-      const response = await client.models.Categories.list(
+      const response = await client.models.Categories.list({
+        authMode: auth ? "userPool" : "identityPool"
+      }
       );
       const categories = response.data;
       if (!categories) {
@@ -74,7 +82,7 @@ const HomePage: React.FC = () => {
           <ScrollingBanner />
           <CategoryList category={categories} />
           <BenefitSection />
-          <ProductListing Products={products} />
+          <ProductListing HomepageProducts={homepageproducts} />
         </>
       )}
     </>

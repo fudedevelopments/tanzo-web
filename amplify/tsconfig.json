@@ -1,5 +1,4 @@
 {
-  "exclude": ["amplify/**/*"],
   "compilerOptions": {
     "target": "es2022",
     "module": "es2022",
@@ -9,12 +8,13 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "allowJs": true,
+    "allowJs": false,
     "checkJs": false,
     "paths": {
       "$amplify/*": [
         "../.amplify/generated/*"
       ]
-    },
-  }
+    }
+  },
+  "exclude": ["amplify/**/*"]
 }

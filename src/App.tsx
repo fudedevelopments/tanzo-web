@@ -16,19 +16,23 @@ import Layout from "./components/layout";
 import HomeLayout from "./components/admin/HomeLayout";
 import ProductListPage from "./pages/productListPage";
 import ProductView from "./components/productView";
-import CheckoutPage from "./pages/checkoutpage";
-
-
+import AddProdutsUnderTitle from "./components/admin/add_products_title";
+import CartPage from "./pages/cartpage";
+import OrdersPage from "./pages/orderspage";
+import PaymentsHistory from "./pages/paymentshistory";
+import AddressForm from "./pages/addressPage";
 
 
 Amplify.configure(outputs);
 
+
 function App() {
   const dispath = useDispatch();
   const { authStatus,} = useAuthenticator(context => [context.authStatus]);
-  const {  user } = useAuthenticator(context => [context.user]);
+  const { user } = useAuthenticator(context => [context.user]);
+
   if (authStatus === "authenticated") {
-    dispath(isAuthenticated(user.username),
+    dispath(isAuthenticated(user.userId),
     );
   }
   if(authStatus === "unauthenticated") {
@@ -52,7 +56,10 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/productListPage/:categoryId" element={<ProductListPage />} />
           <Route path="/productview/:productId" element={<ProductView />} />
-          <Route path="/checkoutPage" element={<CheckoutPage />} />
+          <Route path="/cartPage" element={<CartPage />} />
+          <Route path="/ordersPage" element={<OrdersPage />} />
+          <Route path="/paymentshistory" element={<PaymentsHistory />} />
+          <Route path="/address" element={<AddressForm />} />
         </Route>
         //appbar and fotter layout
 
@@ -62,6 +69,7 @@ function App() {
         <Route path="/add-categories" element ={<AddCategories />} />
         <Route path="/add-product" element={<AddProduct />} />
         <Route path="/home-layout" element={<HomeLayout />} />
+        <Route path="/add-products-under-title/:titleId/:title" element={<AddProdutsUnderTitle />} />
         
         //ProtectedRoutes
         <Route element={<ProtectedRoutes />} >

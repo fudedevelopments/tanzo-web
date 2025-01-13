@@ -2,6 +2,8 @@ import axios from "axios";
 import { env } from "$amplify/env/createorder";
 import { Schema } from "../../data/resource";
 
+
+
 export const handler: Schema["createOrderCF"]['functionHandler'] = async (event) => {
     try {
         const headers = {
@@ -22,7 +24,7 @@ export const handler: Schema["createOrderCF"]['functionHandler'] = async (event)
                 "customer_phone": event.arguments.customerPhone
             },
             "order_meta": {
-                "notify_url": "https://webhook.site/53a5ee60-7c45-4101-b673-7c516b6597d9"
+                "notify_url": "https://webhook.site/4c43138d-d1b0-4d35-ade1-3c46ffd49b0a"
             }
         };
 
