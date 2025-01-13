@@ -96,6 +96,8 @@ const AddProductsUnderTitle: React.FC = () => {
             setLoadingButtons((prev) => ({ ...prev, [productId]: false }));
         }
     };
+    console.log(addedProducts);
+    
 
     const filteredProducts = data?.pages
         .flatMap((page) => page.products)

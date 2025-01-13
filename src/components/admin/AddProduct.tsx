@@ -380,7 +380,7 @@ const ProductAddPage = () => {
 
                 <button
                     className="w-full py-3 mt-4 bg-gradient-to-r from-gray-500 to-gray-700 text-white font-bold rounded-lg shadow-lg hover:from-gray-600 hover:to-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                    onClick={()=>{}}
+                    onClick={()=>navigate("/admin-dashboard")}
                 >
                     Go to Dashboard
                 </button>
