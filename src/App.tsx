@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./components/LoginComp";
 import AdminLogin from "./pages/AdminLogin";
 import { Amplify } from 'aws-amplify';
-import outputs from "../amplify_outputs.json";
+import outputs from "../amplify_outputs.json"
 import { useDispatch } from "react-redux";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { isAuthenticated, isNotAuthenticated } from "./state/authdetails/AuthDetails";

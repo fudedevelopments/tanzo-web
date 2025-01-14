@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { client } from "../utils/client";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";

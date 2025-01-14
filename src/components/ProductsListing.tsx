@@ -1,6 +1,5 @@
 import ProductCard from "./ProductCard";
 import type { Schema } from "../../amplify/data/resource";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 interface ProductsListing {
@@ -8,7 +7,7 @@ interface ProductsListing {
 }
 
 const ProductListing = ({ HomepageProducts }: ProductsListing) => {
-  const navigate = useNavigate();
+
 
   const { data: products, isLoading, isError } = useQuery({
     queryKey: ["products"],

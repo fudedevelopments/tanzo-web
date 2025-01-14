@@ -120,6 +120,8 @@ const ProductView = () => {
                 setLoading(false);
                  console.log(error);
                 setErrorMessage("Error adding product to cart");
+                console.log(errorMessage);
+                
             }
         }
     };
