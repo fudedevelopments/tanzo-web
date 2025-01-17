@@ -21,6 +21,7 @@ import CartPage from "./pages/cartpage";
 import OrdersPage from "./pages/orderspage";
 import PaymentsHistory from "./pages/paymentshistory";
 import AddressForm from "./pages/addressPage";
+import ImageUploadContainer from "./components/imageuploadcontainer";
 
 
 Amplify.configure(outputs);
@@ -60,6 +61,7 @@ function App() {
           <Route path="/ordersPage" element={<OrdersPage />} />
           <Route path="/paymentshistory" element={<PaymentsHistory />} />
           <Route path="/address" element={<AddressForm />} />
+          <Route path="/imageupload" element={<ImageUploadContainer />} />
         </Route>
         //appbar and fotter layout
 
