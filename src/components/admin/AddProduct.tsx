@@ -1,12 +1,14 @@
 import  { useState } from "react";
 import { client } from "../../utils/client";
-
 import { useNavigate } from "react-router-dom";
 import { Schema } from "../../../amplify/data/resource";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import ImageUploadContainer from "../imageuploadcontainer";
 
 
 type Categories = Schema["Categories"]["type"];
+
+
 
 const ProductAddPage = () => {
     const navigate = useNavigate();
@@ -19,10 +21,7 @@ const ProductAddPage = () => {
             return response.data 
         },
     });
-
-    
-
-   
+    const [images, setImages] = useState<string[]>([]);
     const [name, setName] = useState<string>("");
     const [price, setPrice] = useState<number>();
     const [description, setDescription] = useState<string>("");
@@ -37,13 +36,6 @@ const ProductAddPage = () => {
     const [pdimensions, setPDimensions] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-   
-    
-   
-
-
-   
 
  
     const addProductMutation = useMutation({
@@ -62,6 +54,12 @@ const ProductAddPage = () => {
         },
     });
 
+    const handleimagesupload = (updateurls: string[]) => {
+        setImages(updateurls);
+    }
+
+
+
     const handleAddProduct = async () => {
         setErrorMessage(null); // Reset error message
         setLoading(true);
@@ -75,7 +73,8 @@ const ProductAddPage = () => {
                    price: price,
                    actualPrice: actualPrice,
                    description: description,
-                   categoryId : selectedcategory
+                   categoryId: selectedcategory,
+                   images: images
                 });
 
                 await addcDetailsMutation.mutateAsync({
@@ -117,7 +116,9 @@ const ProductAddPage = () => {
                 <h1 className="text-2xl font-bold text-gray-700 mb-6">Add Product</h1>
 
                 {/* Image Upload Section */}
-               
+                <ImageUploadContainer onImagesUpdate={handleimagesupload}>
+                    
+               </ImageUploadContainer>
 
                 {/* Form Fields */}
                 <div className="mt-6 space-y-4">

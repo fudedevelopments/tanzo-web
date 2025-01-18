@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "../../utils/client";
 import { FaTrash } from "react-icons/fa";
-import DisplayImage from "../../utils/imageview";
 import { useNavigate } from "react-router-dom";
 
 const ProductTable: React.FC = () => {
@@ -97,7 +96,11 @@ const ProductTable: React.FC = () => {
                                     }}
                                 >
                                     <td className="py-4 px-4">
-                                        <DisplayImage path={product.images![0] || ""} width={100} height={100}></DisplayImage>
+                                        <img
+                                            src={product.images![0]!}
+                                            alt={product.name}
+                                            style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                                        />
                                     </td>
                                     <td className="py-4 px-4">{truncateText(product.name, 50)}</td>
                                     <td className="py-4 px-4">₹{product.actualPrice.toFixed(2)}</td>
