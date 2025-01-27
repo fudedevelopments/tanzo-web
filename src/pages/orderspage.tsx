@@ -69,8 +69,9 @@ const OrdersPage = () => {
                         key={item.orderId}
                         className="flex items-center bg-white shadow rounded-md p-4"
                     >
-                        <DisplayImage path={item.images![0]!} />
+                        <img src={item.images![0]!} width={96} height={96} />
                         <div className="ml-4 flex-1">
+                            
                             <h2 className="text-sm font-semibold text-gray-800">
                                 {item.name}
                             </h2>
@@ -80,6 +81,9 @@ const OrdersPage = () => {
                             <p className="text-gray-600 text-sm font-bold">
                                 Total: ${(item.price! * item.quantity).toFixed(2)}
                             </p>
+                            <h2 className="text-sm font-popins text-gray-500">
+                                Order Id : {item.orderId}
+                            </h2>
                             <div className="mt-2 space-y-1 text-sm">
                                 <a
                                     href={`/customization/${item.orderId}`}

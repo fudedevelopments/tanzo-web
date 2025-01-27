@@ -24,15 +24,11 @@ export const handler: Schema["createOrderCF"]['functionHandler'] = async (event)
                 "customer_phone": event.arguments.customerPhone
             },
             "order_meta": {
-                "notify_url": "https://webhook.site/4c43138d-d1b0-4d35-ade1-3c46ffd49b0a"
+                "return_url": "https://tanzo.in/paymentstatus/{order_id}"
             }
         };
 
         const response = await axios.post("https://sandbox.cashfree.com/pg/orders", requestBody, { headers });
-
-        // Log the raw response
-        console.log("Raw Cashfree response:", response.data);
-
         // Sanitize and return the response
         return response.data;
 

@@ -1,40 +1,62 @@
 import { Flex } from "@aws-amplify/ui-react";
-import { Schema } from "../../amplify/data/resource";
 import CategoryBox from "./categoryBox";
 import { useNavigate } from "react-router-dom";
 
-type categories = {
-  category: Schema["Categories"]["type"][];
-}
+type Category = {
+  id: string;
+  name: string;
+  image?: string; // Optional field to handle missing images
+};
 
-function CategoryList({ category }: categories) {
+type CategoryListProps = {
+  category: Category[];
+};
+
+function CategoryList({ category }: CategoryListProps) {
   const navigate = useNavigate();
 
   return (
     <Flex
+      direction="column"
+      gap="1rem"
+      padding="1rem"
+      width="100%"
+      alignItems="center" // Center the heading and list
+    >
+      {/* Top heading */}
+      <div className="text-3xl">
+       All Categories
+      </div>
+
+    <Flex
       direction="row"
-      gap="1rem"         // Increased gap between items
-      wrap="nowrap"
+      gap="1rem"
+      wrap="wrap" // Wrap items for smaller screens
       overflow="auto"
-      padding="1rem"     // Increased padding
-      width="100%"       // Ensure full width
-      minHeight="100px"  // Set minimum height
+      padding="1rem"
+      width="100%"
+      minHeight="100px"
+      justifyContent="start" // Center content on smaller screens
     >
       {category.map((item) => {
         return (
           <Flex
-            key={item.name}
-            flex="0 0 200px"  // Fixed width for each category item (don't shrink, don't grow)
+            key={item.id} // Use the unique ID as the key
+            flex="1 1 calc(33.333% - 1rem)" // Adaptive width for up to 3 items per row
+            maxWidth="200px" // Limit max width of each category box
+            minWidth="150px" // Minimum width for small screens
           >
             <CategoryBox
-              imageUrl={item.image}
+              imageUrl={item.image || "/placeholder-image.png"} // Fallback for missing image
               name={item.name}
               onClick={() => navigate(`/productListPage/${item.id}`)}
             />
           </Flex>
         );
       })}
-    </Flex>
+      </Flex>
+      
+     </Flex>
   );
 }
 

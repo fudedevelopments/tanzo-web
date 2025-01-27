@@ -8,7 +8,6 @@ import { env } from "$amplify/env/deletecartitem";
 
 const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(env);
 
-Amplify.configure(resourceConfig, libraryOptions);
 
 // Generate Amplify Data Client
 const client = generateClient<Schema>();

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Schema } from "../../../amplify/data/resource";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import ImageUploadContainer from "../imageuploadcontainer";
+import { v4 as uuidv4 } from "uuid";
 
 
 type Categories = Schema["Categories"]["type"];
@@ -12,7 +13,7 @@ type Categories = Schema["Categories"]["type"];
 
 const ProductAddPage = () => {
     const navigate = useNavigate();
-
+    const imageUUID = uuidv4();
     
     const { data: categories, isLoading: categoriesLoading } = useQuery({
         queryKey: ["categories"],
@@ -21,6 +22,7 @@ const ProductAddPage = () => {
             return response.data 
         },
     });
+   
     const [images, setImages] = useState<string[]>([]);
     const [name, setName] = useState<string>("");
     const [price, setPrice] = useState<number>();
@@ -78,6 +80,7 @@ const ProductAddPage = () => {
                 });
 
                 await addcDetailsMutation.mutateAsync({
+                          id: responseproduct?.id,
                           isImageRequired : isImageRequired,
                           requiredImages: noOfImagesRequired,
                           textRequired: isTextRequired,
@@ -85,10 +88,10 @@ const ProductAddPage = () => {
                           cdescription: cdescription,
                           cNotePoints: cNotePoints,
                           pDimensions: pdimensions,
-                          cId: responseproduct?.id
                 })
 
                 setLoading(false);
+                navigate("/admin-dashboard?topic=products")
             } catch (error: any) {
                 setLoading(false);
                 setErrorMessage(error.message || "Error adding product");
@@ -116,9 +119,9 @@ const ProductAddPage = () => {
                 <h1 className="text-2xl font-bold text-gray-700 mb-6">Add Product</h1>
 
                 {/* Image Upload Section */}
-                <ImageUploadContainer onImagesUpdate={handleimagesupload}>
+                <ImageUploadContainer uploadUrl={`https://workers.tanzo.in/productimages/${imageUUID}`} maxUploads={5} onImagesUpdate={handleimagesupload} />
                     
-               </ImageUploadContainer>
+               
 
                 {/* Form Fields */}
                 <div className="mt-6 space-y-4">

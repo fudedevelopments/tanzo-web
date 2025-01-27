@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { uploadData } from 'aws-amplify/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { client } from '../../utils/client';
-import { useMutation } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import for navigation
 
 const AddCategory: React.FC = () => {
     const [categoryName, setCategoryName] = useState('');
     const [image, setImage] = useState<File | null>(null);
-    const [loading, setLoading] = useState(false); // Loading state
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null); // Error state
+    const navigate = useNavigate(); // For navigation
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -15,43 +18,59 @@ const AddCategory: React.FC = () => {
         }
     };
 
-    const uploadImagesToS3 = async () => {
-        if (image) {
-            const fileExtension = image.name.split(".").pop();
-            const result = await uploadData({
-                path: `category-images/${uuidv4()}.${fileExtension}`,
-                data: image
-            }).result
-            return result.path;
-        }
+    const uploadImagesToR2 = async () => {
+        const imageUUID = uuidv4();
+        const uploadURL = `https://workers.tanzo.in/categoryimages/${imageUUID}`;
+
+        if (!image) throw new Error("No image file selected");
+
+        const binaryData = await image.arrayBuffer();
+        const uint8Array = new Uint8Array(binaryData);
+
+        const response = await axios.put(uploadURL, uint8Array, {
+            headers: {
+                "Content-Type": "application/octet-stream",
+            },
+        });
+
+        return {
+            url: `https://images.tanzo.in/${response.data}`,
+        };
     };
 
     const createCategory = useMutation({
         mutationFn: async (input: { name: string; image: string }) => {
-            const { data: newCategory } = await client.models.Categories.create(input);
-            return newCategory;
+            const response = await client.models.Categories.create(input);
+            console.log(response);
+            return response.data;
         },
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Start loading
+        setLoading(true);
+        setError(null); // Clear previous errors
+
         try {
-            const imagepath = await uploadImagesToS3();
-            console.log(imagepath);
+            const imagepath = await uploadImagesToR2();
+             console.log(imagepath);
+             
             if (imagepath) {
-                const response = await createCategory.mutateAsync({
+             const response  = await createCategory.mutateAsync({
                     name: categoryName,
-                    image: imagepath,
+                    image: imagepath.url,
                 });
-                console.log("Category created:", response);
+
                 setCategoryName('');
                 setImage(null);
+            
+                
+               // Redirect to admin dashboard
             }
-        } catch (error) {
-            console.error("Error creating category:", error);
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
         } finally {
-            setLoading(false); // Stop loading
+            setLoading(false);
         }
     };
 
@@ -59,6 +78,9 @@ const AddCategory: React.FC = () => {
         <div className="flex justify-center items-center h-screen bg-gradient-to-r from-teal-400 to-blue-500">
             <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-semibold text-center text-gray-700">Add Category</h2>
+                {error && (
+                    <p className="text-red-500 text-center text-sm mb-4">{error}</p>
+                )}
                 <form onSubmit={handleSubmit} className="mt-4">
                     <div className="mb-4">
                         <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="categoryName">

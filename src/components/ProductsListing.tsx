@@ -1,32 +1,8 @@
 import ProductCard from "./ProductCard";
-import type { Schema } from "../../amplify/data/resource";
-import { useQuery } from "@tanstack/react-query";
 
-interface ProductsListing {
-  HomepageProducts: Schema["HomePageProducts"]["type"][];
-}
-
-const ProductListing = ({ HomepageProducts }: ProductsListing) => {
-
-
-  const { data: products, isLoading, isError } = useQuery({
-    queryKey: ["products"],
-    queryFn: async () => {
-      const responses = await Promise.all(
-        HomepageProducts.map(async (product) => {
-          const response = await product.products({
-          });
-          const fetchedproduct = response.data;
-          const title = product.title;
-          return { title, fetchedproduct };
-        })
-      );
-      return responses;
-    },
-  });
-
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching products</div>;
+const ProductListing = ({ homepageproducts }: { homepageproducts: any }) => {
+ 
+  
 
   const scrollHandler = (id: string, direction: "left" | "right") => {
     const container = document.getElementById(id);
@@ -37,7 +13,7 @@ const ProductListing = ({ HomepageProducts }: ProductsListing) => {
 
   return (
     <div className="p-6 bg-cream">
-      {products?.map((productGroup, index) => (
+      {homepageproducts?.map((productGroup: any, index: number) => (
         <div key={index} className="mb-8">
           {/* Display the Title */}
           <h2 className="text-2xl font-semibold mb-4 text-center">{productGroup.title}</h2>
@@ -56,7 +32,7 @@ const ProductListing = ({ HomepageProducts }: ProductsListing) => {
               className="flex overflow-x-auto gap-4 px-8 items-center scrollbar-hide"
               style={{ scrollSnapType: "x mandatory" }}
             >
-              {productGroup.fetchedproduct.map((product) => (
+              {productGroup.products.map((product: any) => (
                 <div
                   key={product.id}
                   className="min-w-[200px] flex-shrink-0"
@@ -65,9 +41,9 @@ const ProductListing = ({ HomepageProducts }: ProductsListing) => {
                   <ProductCard
                     id={product.id}
                     title={product.name}
-                    price={product.actualPrice.toString()}
+                    price={product.actualprice.toString()}
                     salePrice={product.price.toString()}
-                    imagepath={product.images}
+                    imagepath={product.image}
                   />
                 </div>
               ))}

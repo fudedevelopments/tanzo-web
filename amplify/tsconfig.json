@@ -2,26 +2,19 @@
   "compilerOptions": {
     "target": "es2022",
     "module": "es2022",
-    "moduleResolution": "node", // Change "bundler" to "node" for better compatibility with Node.js modules.
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "allowJs": false,
+    "allowJs": true,
     "checkJs": false,
     "paths": {
       "$amplify/*": [
         "../.amplify/generated/*"
       ]
-    },
-    "outDir": "./dist", // Optional: Ensure transpiled files are output to a specific directory.
-    "lib": ["es2022", "dom"], // Add DOM library if interacting with the browser.
-    "allowSyntheticDefaultImports": true // Optional: Avoid import compatibility issues.
+    }
   },
-  "exclude": [
-    "amplify/**/*", // Already excluded correctly.
-    "node_modules", // Exclude node_modules to avoid type-checking installed packages.
-    "dist" // Exclude output directory.
-  ]
+  "exclude": ["amplify/**/*"]
 }

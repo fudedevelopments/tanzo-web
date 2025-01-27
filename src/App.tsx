@@ -21,10 +21,28 @@ import CartPage from "./pages/cartpage";
 import OrdersPage from "./pages/orderspage";
 import PaymentsHistory from "./pages/paymentshistory";
 import AddressForm from "./pages/addressPage";
-import ImageUploadContainer from "./components/imageuploadcontainer";
+import AdminOrdersPage from "./components/admin/adminOrdersPage";
+import ProductTable from "./components/admin/productTable";
+import AdminSettingsPage from "./components/admin/adminsettingspage";
+import AboutUs from "./pages/aboutus";
+import ContactUs from "./pages/contactus";
+import PaymentStatusPage from "./pages/paymetstatuspage";
+
+
 
 
 Amplify.configure(outputs);
+
+
+const existingConfig = Amplify.getConfig();
+Amplify.configure({
+  ...existingConfig,
+  API: {
+    ...existingConfig.API,
+    REST: outputs.custom.API,
+    
+  },
+});
 
 
 function App() {
@@ -61,7 +79,9 @@ function App() {
           <Route path="/ordersPage" element={<OrdersPage />} />
           <Route path="/paymentshistory" element={<PaymentsHistory />} />
           <Route path="/address" element={<AddressForm />} />
-          <Route path="/imageupload" element={<ImageUploadContainer />} />
+          <Route path="/paymentstatus/:orderId" element={<PaymentStatusPage />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/contactus" element={<ContactUs/>} />
         </Route>
         //appbar and fotter layout
 
@@ -70,9 +90,11 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/add-categories" element ={<AddCategories />} />
         <Route path="/add-product" element={<AddProduct />} />
-        <Route path="/home-layout" element={<HomeLayout />} />
         <Route path="/add-products-under-title/:titleId/:title" element={<AddProdutsUnderTitle />} />
-        
+        < Route path="/ordersAdmin" element={<AdminOrdersPage />} />
+        <Route path="/products" element={<ProductTable />} />
+        <Route path="/home-layout" element={<HomeLayout />} />
+        <Route path="/settings" element={<AdminSettingsPage/>} />
         //ProtectedRoutes
         <Route element={<ProtectedRoutes />} >
         </Route>

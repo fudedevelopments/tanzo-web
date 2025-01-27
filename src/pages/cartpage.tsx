@@ -2,10 +2,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "../utils/client";
-import DisplayImage from "../utils/imageview";
 import { useState } from "react";
 import { load } from "@cashfreepayments/cashfree-js"
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 
 interface deleteproduct{
@@ -52,11 +52,13 @@ const CartPage = () => {
                     const productResponse = await client.models.Products.get({
                         id: cartItem.product!,
                     });
+                    
                     return {
                         ...productResponse.data,
                         quantity: cartItem.quantity,
                         cartproductid: cartItem.id,
-                        cdetails : cartItem.cdeatails
+                        cdetails: cartItem.cdeatails
+                        
                     };
                 })
             );
@@ -64,8 +66,26 @@ const CartPage = () => {
         },
     });
 
+    const deleteImageMutation = useMutation({
+        mutationKey: ["deleteImage"],
+        mutationFn: async (uploadedUrl: string) => {
+            await axios.delete(uploadedUrl);
+            return uploadedUrl;
+        },
+        onError: (error) => {
+            console.error("Delete error:", error);
+        },
+    });
+
     const deleteMutation = useMutation({
         mutationFn: async ({ productid, cdetails }: deleteproduct) => {
+
+            const cdeteailcustomer = await client.models.CdetCustomer.get({
+                id: cdetails!
+            })
+            cdeteailcustomer.data?.uploadedimagesurl?.map(async (image) => {
+                await deleteImageMutation.mutateAsync(image!)
+            })
             await client.models.CdetCustomer.delete({
                 id: cdetails,
             });
@@ -198,8 +218,8 @@ const CartPage = () => {
                         key={item.id}
                         className="flex items-center bg-white shadow rounded-md p-4"
                     >
-                        <DisplayImage path={item.images![0]!}>
-                        </DisplayImage>
+                        <img src={item.images![0]!} width={96} height={96}/>
+                       
                         <div className="ml-4 flex-1">
                             <h2 className="text-sm font-semibold text-gray-800">
                                 {item.name}

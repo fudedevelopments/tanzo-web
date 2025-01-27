@@ -1,59 +1,59 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-
-
-
 interface ImageUploadContainerProps {
-    onImagesUpdate?: (images: string[]) => void;
+    onImagesUpdate?: (images: string[], uploadurl: string[]) => void;
+    maxUploads: number;
+    uploadUrl: string;
 }
 
+function ImageUploadContainer({ onImagesUpdate, maxUploads, uploadUrl }: ImageUploadContainerProps) {
 
-function ImageUploadContainer({ onImagesUpdate }: ImageUploadContainerProps) {
-    const [images, setImages] = useState<{ id: string; file: File; status: string; url?: string; uploadurl: string }[]>([]);
- 
-    const updateParentWithUrls = () => {
-        
+    const [images, setImages] = useState<{ id: string; file: File; status: string; url?: string; uploadedurl: string }[]>([]);
+    const [error, setError] = useState<string | null>(null);
+
+
+    useEffect(() => {
         const urls = images.map((img) => img.url).filter((url): url is string => !!url);
+        const uploadurls = images.map((img) => img.uploadedurl).filter((url): url is string => !!url);
         if (onImagesUpdate) {
-            onImagesUpdate(urls) // Pass the full list of URLs
+            onImagesUpdate(urls, uploadurls);
+        }
+    }, [images]);
+
+
+    const updateParentWithUrls = () => {
+        const urls = images.map((img) => img.url).filter((url): url is string => !!url);
+        const uploadurls = images.map((img) => img.uploadedurl).filter((url): url is string => !!url);
+        if (onImagesUpdate) {
+            onImagesUpdate(urls, uploadurls);
         }
     };
 
     const uploadImageMutation = useMutation({
         mutationKey: ["uploadImage"],
         mutationFn: async (image: { id: string; file: File }) => {
-            const imageUUID = uuidv4();
-            const uploadURL = `https://workers.tanzo.in/productimages/${imageUUID}`;
             const binaryData = await image.file.arrayBuffer();
             const uint8Array = new Uint8Array(binaryData);
 
-            const response = await axios.put(uploadURL, uint8Array, {
+            const response = await axios.put(uploadUrl, uint8Array, {
                 headers: {
                     "Content-Type": "application/octet-stream",
                 },
             });
 
-            return { id: image.id, url: `https://images.tanzo.in/${response.data}`, uploadurl: uploadURL }; // Adjust API response
+            return { id: image.id, url:`https://images.tanzo.in/${response.data}`, upurl:`${uploadUrl}` }; // Adjust API response
         },
         onSuccess: (data) => {
             setImages((prevImages) => {
                 const updatedImages = prevImages.map((img) =>
-                    img.id === data.id ? { ...img, status: "uploaded", url: data.url, uploadurl: data.uploadurl } : img
+                    img.id === data.id ? {...img, status: "uploaded", url: data.url ,uploadedurl:data.upurl} : img
                 );
-
-                // Call updateParentWithUrls with the updated list
-                const urls = updatedImages.map((img) => img.url).filter((url): url is string => !!url);
-                if (onImagesUpdate) {
-                    onImagesUpdate(urls);
-                }
-
                 return updatedImages;
             });
         },
-
         onError: (error, variables) => {
             setImages((prevImages) =>
                 prevImages.map((img) =>
@@ -63,31 +63,22 @@ function ImageUploadContainer({ onImagesUpdate }: ImageUploadContainerProps) {
             console.error("Upload error:", error);
         },
     });
-
-    const deleteImageMutation = useMutation({
-        mutationKey: ["deleteImage"],
-        mutationFn: async (uploadurl: string) => {
-            await axios.delete(uploadurl); // Use the uploadurl for deletion
-        },
-        onSuccess: (_, uploadurl) => {
-            setImages((prevImages) => prevImages.filter((img) => img.uploadurl !== uploadurl));
-
-            updateParentWithUrls(); // Update parent after a successful deletion
-        },
-        onError: (error) => {
-            console.error("Failed to delete image:", error);
-        },
-    });
-
-
+ 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const selectedFiles = Array.from(e.target.files);
+
+            if (images.length + selectedFiles.length > maxUploads) {
+                setError(`You can only upload up to ${maxUploads} images.`);
+                return;
+            }
+
+            setError(null);
             const newImages = selectedFiles.map((file) => ({
                 id: uuidv4(),
                 file,
                 status: "pending",
-                uploadurl: "", // Initialize with an empty string
+                uploadedurl:""
             }));
 
             setImages((prevImages) => [...prevImages, ...newImages]);
@@ -98,6 +89,27 @@ function ImageUploadContainer({ onImagesUpdate }: ImageUploadContainerProps) {
         }
     };
 
+    const deleteImageMutation = useMutation({
+        mutationKey: ["deleteImage"],
+        mutationFn: async (uploadedUrl: string) => {
+            await axios.delete(uploadedUrl);
+            return uploadedUrl;
+        },
+        onSuccess: (deletedUploadedUrl) => {
+            setImages((prevImages) =>
+                prevImages.filter((img) => img.uploadedurl !== deletedUploadedUrl)
+            );
+            setError(null);
+            updateParentWithUrls();
+        },
+        onError: (error) => {
+            console.error("Delete error:", error);
+            setError("Failed to delete image. Please try again.");
+        },
+    });
+
+    
+
     const handleRetry = (image: { id: string; file: File }) => {
         setImages((prevImages) =>
             prevImages.map((img) =>
@@ -107,14 +119,15 @@ function ImageUploadContainer({ onImagesUpdate }: ImageUploadContainerProps) {
         uploadImageMutation.mutate(image);
     };
 
-    const handleDelete = (image: { id: string; uploadurl: string; url?: string }) => {
-        if (image.uploadurl) {
-            deleteImageMutation.mutate(image.uploadurl);
+    const handleDelete = (image: { id: string; uploadedurl?: string }) => {
+        if (image.uploadedurl) {
+            deleteImageMutation.mutate(image.uploadedurl);
         } else {
             setImages((prevImages) => prevImages.filter((img) => img.id !== image.id));
+            setError(null);
+            updateParentWithUrls();
         }
     };
-
 
     return (
         <div>
@@ -125,11 +138,18 @@ function ImageUploadContainer({ onImagesUpdate }: ImageUploadContainerProps) {
                     e.preventDefault();
                     if (e.dataTransfer.files) {
                         const files = Array.from(e.dataTransfer.files);
+
+                        if (images.length + files.length > maxUploads) {
+                            setError(`You can only upload up to ${maxUploads} images.`);
+                            return;
+                        }
+
+                        setError(null);
                         const newImages = files.map((file) => ({
                             id: uuidv4(),
                             file,
                             status: "pending",
-                            uploadurl: "", // Initialize with an empty string
+                            uploadedurl:""
                         }));
 
                         setImages((prevImages) => [...prevImages, ...newImages]);
@@ -150,8 +170,7 @@ function ImageUploadContainer({ onImagesUpdate }: ImageUploadContainerProps) {
                                 <img
                                     src={URL.createObjectURL(image.file)}
                                     alt="Preview"
-                                    className={`h-20 w-20 object-cover rounded-lg shadow-md ${image.status === "error" ? "opacity-50" : ""
-                                        }`}
+                                    className={`h-20 w-20 object-cover rounded-lg shadow-md ${image.status === "error" ? "opacity-50" : ""}`}
                                 />
                                 {image.status === "pending" && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 rounded-lg">
@@ -187,7 +206,6 @@ function ImageUploadContainer({ onImagesUpdate }: ImageUploadContainerProps) {
                         ))}
                     </div>
                 )}
-
                 <input
                     id="imageInput"
                     type="file"
@@ -197,6 +215,7 @@ function ImageUploadContainer({ onImagesUpdate }: ImageUploadContainerProps) {
                     onChange={handleImageUpload}
                 />
             </div>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
     );
 }

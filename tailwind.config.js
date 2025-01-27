@@ -6,9 +6,13 @@ export default {
   ],
   theme: {
     extend: {
+       backgroundImage: {
+        'mask-gradient': 'linear-gradient(to right, transparent, black, transparent)',
+      },
       fontFamily: {
-        'sans': ['Inter', 'sans-serif', 'Roboto'],
+        'sans': [,'Inter', 'sans-serif', 'Roboto'],
         'serif': ['Merriweather', 'serif'],
+        'popins': ['Popins', 'sans-serif'],
       },
       gridTemplateColumns: {
         '70/30': '70% 28%',
@@ -29,9 +33,14 @@ export default {
     },
   },
   plugins: [
+  require('tailwindcss-text-stroke'),
     function ({ addUtilities }) {
       addUtilities(
         {
+          '.mask-gradient': {
+          maskImage: 'linear-gradient(to right, transparent, black, transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black, transparent)', // For WebKit-based browsers
+        },
           '.scrollbar-hide': {
             '-ms-overflow-style': 'none', /* Internet Explorer 10+ */
             'scrollbar-width': 'none',    /* Firefox */

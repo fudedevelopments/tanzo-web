@@ -40,7 +40,11 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
         ${active ? 'border-primary' : 'border-neutral-200'}
         transition
       `}>
-            <DisplayImage path={imageUrl} width={200} height={300}/>
+                <img
+                    src={imageUrl}
+                    alt={name}
+                    style={{ width: "200px", height: "200px", objectFit: "cover" }}
+                />
             </div>
             <div className={`
         text-lg

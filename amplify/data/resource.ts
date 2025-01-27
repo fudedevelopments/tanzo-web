@@ -16,7 +16,6 @@ const schema = a.schema({
       category: a.belongsTo('Categories', 'categoryId'),
       hpId : a.id(),
       homePageProduct: a.belongsTo('HomePageProducts', 'hpId'),
-      cdetails : a.hasOne('Cdetails', 'cId')
     })
     .authorization((allow) => [
       allow.authenticated().to(['read']),
@@ -95,6 +94,7 @@ const schema = a.schema({
 
 
   Cdetails: a.model({
+      id: a.string().required(),
       isImageRequired : a.boolean(),
       requiredImages: a.float(),
       textRequired: a.boolean(),
@@ -102,8 +102,6 @@ const schema = a.schema({
       cdescription: a.string(),
       cNotePoints: a.string(),
       pDimensions: a.string(),
-      cId: a.id(),
-      product: a.belongsTo('Products', 'cId')
     }).authorization((allow) => [
       allow.authenticated().to(['read']),
       allow.guest().to(['read']),
@@ -111,6 +109,7 @@ const schema = a.schema({
     ]),
   
   CdetCustomer: a.model({
+    uploadedimagesurl: a.string().array(),
     images: a.string().array(),
     text: a.string(),
     spotifySong: a.string(),
@@ -143,7 +142,7 @@ const schema = a.schema({
       .authorization((allow) => [
       allow.guest().to(['read']),
       allow.authenticated().to(['read']),
-      allow.group('ADMINS'),
+      allow.group('ADMINS').to(['create','delete','get']),
       ]),
 
     Admin: a.model({

@@ -12,8 +12,8 @@ Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
 
 // Configure Amplify
 const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(env);
-Amplify.configure(resourceConfig, libraryOptions);
 
+Amplify.configure(resourceConfig, libraryOptions);
 // Generate Amplify Data Client
 const client = generateClient<Schema>();
 

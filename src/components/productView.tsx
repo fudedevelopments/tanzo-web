@@ -1,33 +1,37 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { client } from "../utils/client";
-import DisplayImage from "../utils/imageview";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { uploadData } from "aws-amplify/storage";
 import { v4 as uuidv4 } from "uuid";
 import { RootState } from "../state/store";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import ImageUploadContainer from "./imageuploadcontainer";
 
 const ProductView = () => {
+    const imageUUID = uuidv4();
     const navigate = useNavigate();
     const userid = useSelector((state: RootState) => state.auth.username);
     const { productId } = useParams();
     const { data: fetchedproduct, isError, isLoading } = useQuery({
         queryKey: ["singleproduct"],
         queryFn: async () => {
-            const { data: fetchedproduct } = await client.models.Products.get({
-                id: productId!,
-            });
-            const cdetails = await fetchedproduct?.cdetails();
-            return { ...fetchedproduct, ...cdetails?.data };
+            const response = await axios.post(
+                "https://6xk3wh35nploq2rx22myw63pdq0fstsr.lambda-url.ap-south-1.on.aws/",
+                {
+                    id: productId, 
+                }
+            );
+            console.log(response);
+            
+            return response.data; 
         },
     });
-
-
+    const [uploadurl, setuploadurl] = useState<string[]>([]);
+    const [uploadimages, setuploadImages] = useState<string[]>([]);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [startIndex, setStartIndex] = useState(0);
-    const [uploadedImages, setUploadedImages] = useState<File[]>([]);
     const [customText, setCustomText] = useState("");
     const [spotifySong, setSpotifySong] = useState("");
     const [quantity, setQuantity] = useState(1);
@@ -35,34 +39,13 @@ const ProductView = () => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            const files = Array.from(event.target.files);
-            setUploadedImages((prev) => [...prev, ...files]);
-        }
-    };
-
-
-    const uploadImagesMutation = useMutation({
-        mutationFn: async (images: File[]): Promise<string[]> => {
-            const uploadedKeys: string[] = [];
-            for (const image of images) {
-                const fileExtension = image.name.split(".").pop();
-                const result = await uploadData({
-                    path: `customer-Cimages/${uuidv4()}.${fileExtension}`,
-                    data: image,
-                    options: {
-                        metadata: { contentType: image.type },
-                    },
-                }).result;
-
-                if (result.path) {
-                    uploadedKeys.push(result.path);
-                }
-            }
-            return uploadedKeys;
-        },
-    });
+    const handleimagesupload = (updateurls: string[], uploadurl:string[]) => {
+        setuploadImages(updateurls);
+        setuploadurl(uploadurl);
+        console.log(uploadurl);
+        
+    }
+  
 
     const createcdetcustomer = useMutation({
         mutationKey: ['createcdetcustomer'],
@@ -84,13 +67,11 @@ const ProductView = () => {
         }
     })
 
-    const handleRemoveImage = (index: number) => {
-        setUploadedImages((prev) => prev.filter((_, i) => i !== index));
-    };
+
 
     const handleBuyNow = async() => {
         if (
-            (fetchedproduct?.isImageRequired && uploadedImages.length < fetchedproduct.requiredImages!) ||
+            (fetchedproduct?.isImageRequired && uploadimages.length < fetchedproduct.requiredImages!) ||
             (fetchedproduct?.textRequired && !customText) ||
             (fetchedproduct?.isSpotify && !spotifySong)
         ) {
@@ -100,10 +81,10 @@ const ProductView = () => {
             setLoading(true);
             setErrorMessage(null);
             try {
-                const uploadedimagespath = await uploadImagesMutation.mutateAsync(uploadedImages)
                 const cdetailsresponse = await createcdetcustomer.mutateAsync(
                     {
-                        images: uploadedimagespath,
+                        uploadedimagesurl:uploadurl,
+                        images: uploadimages,
                         text: customText,
                         spotifySong: spotifySong,
                     })
@@ -144,7 +125,7 @@ const ProductView = () => {
         );
     }
 
-    const images = fetchedproduct?.images?.filter((image): image is string => image !== null) || [];
+    const images = fetchedproduct?.product.images?.filter((image : any): image is string => image !== null) || [];
     const bigImage = selectedImage || images[0];
     const visibleImages = images.slice(startIndex, startIndex + 3);
 
@@ -162,7 +143,7 @@ const ProductView = () => {
                     {/* Image and Product Details */}
                     <div className="w-full lg:w-1/2">
                         <div className="mb-6">
-                            <DisplayImage path={bigImage || ""} width={500} height={400} />
+                            <img src={bigImage || ""} width={500} height={400} />
                         </div>
                         <div className="flex items-center gap-4">
                             <button
@@ -173,13 +154,13 @@ const ProductView = () => {
                                 ◀
                             </button>
                             <div className="flex gap-2">
-                                {visibleImages.map((image, index) => (
+                                {visibleImages.map((image: any, index : any) => (
                                     <div
                                         key={index}
                                         className={`cursor-pointer border-4 ${bigImage === image ? "border-pink-500" : "border-gray-300"} rounded-lg p-1 shadow-lg`}
                                         onClick={() => setSelectedImage(image)}
                                     >
-                                        <DisplayImage path={image} width={64} height={64} />
+                                        <img src={image} width={64} height={64}/>
                                     </div>
                                 ))}
                             </div>
@@ -192,51 +173,24 @@ const ProductView = () => {
                             </button>
                         </div>
                         <div className="mt-6">
-                            <p className="text-lg font-semibold text-gray-700">Dimensions: {fetchedproduct?.pDimensions}</p>
-                            <p className="text-base text-gray-600 mt-2">{fetchedproduct?.cdescription}</p>
+                            <p className="text-lg font-semibold text-gray-700">Dimensions: {fetchedproduct?.cdetails?.pDimensions}</p>
+                            <p className="text-base text-gray-600 mt-2">{fetchedproduct?.cdetails?.cdescription}</p>
                         </div>
                     </div>
 
                     {/* Customization and Quantity */}
                     <div className="w-full lg:w-1/2 flex flex-col gap-6">
-                        <h1 className="text-4xl font-bold text-gray-800">{fetchedproduct?.name}</h1>
+                        <h1 className="text-4xl font-bold text-gray-800">{fetchedproduct?.product?.name}</h1>
                         <div className="flex items-center gap-4">
-                            <span className="text-3xl font-bold text-green-600">₹{fetchedproduct?.price}</span>
-                            <span className="text-xl text-gray-500 line-through">₹{fetchedproduct?.actualPrice}</span>
+                            <span className="text-3xl font-bold text-green-600">₹{fetchedproduct?.product?.price}</span>
+                            <span className="text-xl text-gray-500 line-through">₹{fetchedproduct?.product?.actualPrice}</span>
                         </div>
 
-                        {fetchedproduct?.isImageRequired && (
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-800">
-                                    Upload Images ({uploadedImages.length}/{fetchedproduct.requiredImages})
-                                </h2>
-                                <label className="cursor-pointer">
-                                    <input type="file" multiple className="hidden" onChange={handleImageUpload} />
-                                    <div className="flex items-center justify-center h-32 border-2 border-dashed rounded-lg p-4 bg-white hover:scale-105 transition">
-                                        <p className="text-lg font-semibold text-gray-600">Click to upload images</p>
-                                    </div>
-                                </label>
-                                <div className="mt-4 flex flex-wrap gap-4">
-                                    {uploadedImages.map((image, index) => (
-                                        <div key={index} className="relative">
-                                            <img
-                                                src={URL.createObjectURL(image)}
-                                                alt="Uploaded"
-                                                className="w-24 h-24 object-cover rounded-lg shadow-lg"
-                                            />
-                                            <button
-                                                onClick={() => handleRemoveImage(index)}
-                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                                            >
-                                                ✕
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                        {fetchedproduct?.cdetails?.isImageRequired && (
+                            <ImageUploadContainer onImagesUpdate={handleimagesupload} uploadUrl={`https://workers.tanzo.in/cdetailimages/${imageUUID}`} maxUploads={fetchedproduct?.cdetails?.requiredImages}/>
                         )}
 
-                        {fetchedproduct?.textRequired && (
+                        {fetchedproduct?.cdetails?.textRequired && (
                             <div>
                                 <label className="block text-lg font-semibold text-gray-800 mb-2">Customization Text</label>
                                 <input
@@ -248,7 +202,7 @@ const ProductView = () => {
                             </div>
                         )}
 
-                        {fetchedproduct?.isSpotify && (
+                        {fetchedproduct?.cdetails?.isSpotify && (
                             <div>
                                 <label className="block text-lg font-semibold text-gray-800 mb-2">Spotify Song URL</label>
                                 <input
