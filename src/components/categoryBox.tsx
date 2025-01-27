@@ -1,4 +1,4 @@
-import DisplayImage from "../utils/imageview";
+
 
 interface CategoryBoxProps {
     name: string;

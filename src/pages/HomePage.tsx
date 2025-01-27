@@ -16,7 +16,10 @@ import TanzoBenefits from "../components/tanzobenefit";
 import CategoryList from "../components/CategoriesList";
 
 const HomePage: React.FC = () => {
-  const auth = useSelector((state: RootState) => state.auth.isAuth);
+  const auth = useSelector((state: RootState) => state.auth!.isAuth);
+
+  console.log(auth);
+  
 
   const productListRef = useRef<HTMLDivElement>(null); // Create a ref for the product list section
 

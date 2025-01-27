@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "../../utils/client";
-import DisplayImage from "../../utils/imageview";
 import { useParams } from "react-router-dom";
 
 const AddProductsUnderTitle: React.FC = () => {
@@ -138,7 +137,7 @@ const AddProductsUnderTitle: React.FC = () => {
                         className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md"
                     >
                         <div className="flex items-center space-x-6">
-                            <DisplayImage path={product.images[0]} />
+                            <img src={product.images[0]} width={64} height={64} />
                             <div>
                                 <h2 className="text-lg font-semibold">{product.name}</h2>
                                 <p className="text-sm text-gray-500">₹{product.price}</p>

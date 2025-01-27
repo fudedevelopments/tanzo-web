@@ -3,14 +3,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { client } from '../../utils/client';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import for navigation
+
 
 const AddCategory: React.FC = () => {
     const [categoryName, setCategoryName] = useState('');
     const [image, setImage] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null); // Error state
-    const navigate = useNavigate(); // For navigation
+
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -56,7 +56,7 @@ const AddCategory: React.FC = () => {
              console.log(imagepath);
              
             if (imagepath) {
-             const response  = await createCategory.mutateAsync({
+             await createCategory.mutateAsync({
                     name: categoryName,
                     image: imagepath.url,
                 });

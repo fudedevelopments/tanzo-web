@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { client } from "../utils/client";
-import DisplayImage from "../utils/imageview";
 
 const OrdersPage = () => {
 

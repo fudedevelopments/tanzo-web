@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { client } from "../utils/client";
-import DisplayImage from "../utils/imageview";
+
 
 function ProductListPage() {
   const { categoryId } = useParams();
@@ -76,7 +76,7 @@ function ProductListPage() {
               >
                 {/* Product Image */}
                 <div className="w-24 h-24 bg-gray-100 flex justify-center items-center rounded-md overflow-hidden">
-                  <DisplayImage path={product.images[0]} width={300} height={200} ></DisplayImage>
+                  <img src ={product.images[0]} width={300} height={200} />
                 </div>
 
                 {/* Product Details */}
