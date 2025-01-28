@@ -16,35 +16,35 @@ const teamMembers: TeamMember[] = [
         name: "Praveen M",
         position: "Founder",
         bio: "Praveen leads Tanzo Gifts with a passion for creating innovative, personalized gifts using the latest technologies like laser engraving and sublimation printing.",
-        imageUrl: "/src/assets/praveen.jpg",
+        imageUrl: "https://images.tanzo.in/assets/praveen",
     },
     {
         id: 2,
         name: "Dinesh Kumar V S",
         position: "Chief Marketing Officer",
         bio: "Dinesh is responsible for showcasing the unique offerings of Tanzo Gifts to a global audience through strategic marketing initiatives.",
-        imageUrl: "/src/assets/dineshkumar.jpg",
+        imageUrl: "https://images.tanzo.in/assets/dinesh",
     },
     {
         id: 3,
         name: "Paul Earnest J",
         position: "Head of Product Development",
         bio: "Paul ensures every product is crafted to perfection using high-quality acrylic, MDF, and advanced printing technologies.",
-        imageUrl: "/src/assets/paul.jpg",
+        imageUrl: "https://images.tanzo.in/assets/paul",
     },
     {
         id: 4,
         name: "Gokul Prasath S R",
         position: "Operations Manager",
         bio: "Gokul oversees the smooth operation of our production and delivery systems, ensuring customer satisfaction at every step.",
-        imageUrl: "/src/assets/gokul.jpg",
+        imageUrl: "https://images.tanzo.in/assets/gokul",
     },
     {
         id: 5,
         name: "Jerin",
         position: "Designer",
         bio: "jerin brings creativity and vision to life, crafting stunning designs that align with our brand's values and captivate our audience.",
-        imageUrl: "/src/assets/jerin.jpg",
+        imageUrl: "https://images.tanzo.in/assets/jerin",
     }
 
 ];

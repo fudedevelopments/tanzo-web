@@ -21,17 +21,17 @@ const TanzoBenefits = () => {
         }}
         >
               <div className="flex gap-x-16 flex-none">
-              <img src="/src/assets/support.png" alt="support" className="logo-benefit-image" />
-              <img src="/src/assets/bestprice.png" alt="bestprice"className="logo-benefit-image" />
-              <img src="/src/assets/fastdelivery.png" alt="fastdelivery" className="logo-benefit-image"/>
-              <img src="/src/assets/trust.png" alt="trust" className="logo-benefit-image" />
-              <img src="/src/assets/secure.png" alt="payment" className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit1" alt="support" className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit2" alt="bestprice"className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit3" alt="fastdelivery" className="logo-benefit-image"/>
+              <img src="https://images.tanzo.in/assets/benefit4" alt="trust" className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit5" alt="payment" className="logo-benefit-image" />
               {/* second */}
-              <img src="/src/assets/support.png" alt="support" className="logo-benefit-image" />
-              <img src="/src/assets/bestprice.png" alt="bestprice" className="logo-benefit-image" />
-              <img src="/src/assets/fastdelivery.png" alt="fastdelivery" className="logo-benefit-image" />
-              <img src="/src/assets/trust.png" alt="trust" className="logo-benefit-image" />
-              <img src="/src/assets/secure.png" alt="payment" className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit1" alt="support" className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit2" alt="bestprice" className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit3" alt="fastdelivery" className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit4" alt="trust" className="logo-benefit-image" />
+              <img src="https://images.tanzo.in/assets/benefit5" alt="payment" className="logo-benefit-image" />
           </div>
           </motion.div>
         </div>

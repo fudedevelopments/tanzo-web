@@ -21,7 +21,7 @@ function ImageUploadContainer({ onImagesUpdate, maxUploads, uploadUrl }: ImageUp
         if (onImagesUpdate) {
             onImagesUpdate(urls, uploadurls);
         }
-    }, [images]);
+    }, [images]); 
 
 
     const updateParentWithUrls = () => {
