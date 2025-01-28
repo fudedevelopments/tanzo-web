@@ -1,11 +1,16 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   Box,
   Typography,
   CircularProgress,
+  Snackbar,
+  IconButton,
+  Button,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { RootState } from "../state/store";
 import "@fontsource/dm-sans";
 import Hero from "../components/Hero";
@@ -17,11 +22,10 @@ import CategoryList from "../components/CategoriesList";
 
 const HomePage: React.FC = () => {
   const auth = useSelector((state: RootState) => state.auth!.isAuth);
+  const navigate = useNavigate();
+  const [showActionBar, setShowActionBar] = useState(false);
 
-  console.log(auth);
-  
-
-  const productListRef = useRef<HTMLDivElement>(null); // Create a ref for the product list section
+  const productListRef = useRef<HTMLDivElement>(null);
 
   const scrollToProducts = () => {
     productListRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -43,6 +47,23 @@ const HomePage: React.FC = () => {
       }
     },
   });
+
+  useEffect(() => {
+    if (!auth) {
+      const timer = setTimeout(() => {
+        setShowActionBar(true);
+      }, 10000); // Show the action bar after 10 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [auth]);
+
+  const handleLoginRedirect = () => {
+    navigate("/login");
+  };
+
+  const handleCloseActionBar = () => {
+    setShowActionBar(false);
+  };
 
   return (
     <>
@@ -84,7 +105,7 @@ const HomePage: React.FC = () => {
               <Typography variant="body1">No products found.</Typography>
             )}
             {/* home products */}
-            <div ref={productListRef}> {/* Add the ref here */}
+            <div ref={productListRef}>
               {homepagequery?.data?.homePageProducts ? (
                 <ProductListing homepageproducts={homepagequery.data.homePageProducts} />
               ) : (
@@ -93,6 +114,48 @@ const HomePage: React.FC = () => {
             </div>
           </Box>
         </>
+      )}
+
+      {/* Action Bar for Non-Authenticated Users */}
+      {!auth && (
+        <Snackbar
+          open={showActionBar}
+          onClose={handleCloseActionBar}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          message={
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <Typography variant="body1" fontWeight="bold">
+                Please sign in for a better experience!
+              </Typography>
+              <Box display="flex" gap={1} mt={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleLoginRedirect}
+                >
+                  Login with Email
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={handleLoginRedirect}
+                >
+                  Login with Google
+                </Button>
+              </Box>
+            </Box>
+          }
+          action={
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleCloseActionBar}
+            >
+              <CloseIcon />
+            </IconButton>
+          }
+        />
       )}
     </>
   );
