@@ -34,16 +34,6 @@ import PaymentStatusPage from "./pages/paymetstatuspage";
 Amplify.configure(outputs);
 
 
-const existingConfig = Amplify.getConfig();
-Amplify.configure({
-  ...existingConfig,
-  API: {
-    ...existingConfig.API,
-    REST: outputs.custom.API,
-    
-  },
-});
-
 
 function App() {
   const dispath = useDispatch();
