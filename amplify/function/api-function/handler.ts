@@ -5,9 +5,9 @@ import AWS from "aws-sdk";
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 // Replace with the names of your DynamoDB tables
-const HOME_PAGE_PRODUCTS_TABLE = "HomePageProducts-ltarpn4flzeszmmsztlm4llulq-NONE";
-const PRODUCTS_TABLE = "Products-ltarpn4flzeszmmsztlm4llulq-NONE";
-const CATEGORIES_TABLE = "Categories-ltarpn4flzeszmmsztlm4llulq-NONE";
+const HOME_PAGE_PRODUCTS_TABLE = "HomePageProducts-jgnnimd2mbh6dk35rgkisgdxma-NONE";
+const PRODUCTS_TABLE = "Products-jgnnimd2mbh6dk35rgkisgdxma-NONE";
+const CATEGORIES_TABLE = "Categories-jgnnimd2mbh6dk35rgkisgdxma-NONE";
 
 // The name of the GSI
 const GSI_NAME = "gsi-HomePageProducts.products";
