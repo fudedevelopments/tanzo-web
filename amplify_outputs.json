@@ -1,9 +1,9 @@
 {
   "auth": {
-    "user_pool_id": "ap-south-1_DpD3LM4TM",
+    "user_pool_id": "ap-south-1_DOAj9FxLu",
     "aws_region": "ap-south-1",
-    "user_pool_client_id": "7lq3sqlb87bb7eq2mcc0n7u9s4",
-    "identity_pool_id": "ap-south-1:190430b6-fe0a-4a6b-9d51-28e5181a5181",
+    "user_pool_client_id": "lqd6edl74vece1d1hdmpmbv7u",
+    "identity_pool_id": "ap-south-1:73544b76-5739-45d5-ac18-f119678bbe80",
     "mfa_methods": [],
     "standard_required_attributes": [
       "email"
@@ -13,6 +13,13 @@
     ],
     "user_verification_types": [
       "email"
+    ],
+    "groups": [
+      {
+        "ADMINS": {
+          "precedence": 0
+        }
+      }
     ],
     "mfa_configuration": "NONE",
     "password_policy": {
@@ -42,12 +49,12 @@
         "profile",
         "aws.cognito.signin.user.admin"
       ],
-      "domain": "c5b749924202c4111360.auth.ap-south-1.amazoncognito.com"
+      "domain": "6a04d1068fba167bd982.auth.ap-south-1.amazoncognito.com"
     },
     "unauthenticated_identities_enabled": true
   },
   "data": {
-    "url": "https://g4hf32v3zzfoxeggtop5iplieq.appsync-api.ap-south-1.amazonaws.com/graphql",
+    "url": "https://vdtiinhfwzbifjsaalqpzqxgoa.appsync-api.ap-south-1.amazonaws.com/graphql",
     "aws_region": "ap-south-1",
     "default_authorization_type": "AMAZON_COGNITO_USER_POOLS",
     "authorization_types": [
@@ -1530,24 +1537,65 @@
   },
   "storage": {
     "aws_region": "ap-south-1",
-    "bucket_name": "amplify-d23r97sxhu0e0j-ma-tanzowebstoragebucketaae-ksfo0jdde6gh",
+    "bucket_name": "amplify-amplifyvitereactt-tanzowebstoragebucketaae-p2kiiwpjhf3w",
     "buckets": [
       {
         "name": "tanzoWebStorage",
-        "bucket_name": "amplify-d23r97sxhu0e0j-ma-tanzowebstoragebucketaae-ksfo0jdde6gh",
-        "aws_region": "ap-south-1"
+        "bucket_name": "amplify-amplifyvitereactt-tanzowebstoragebucketaae-p2kiiwpjhf3w",
+        "aws_region": "ap-south-1",
+        "paths": {
+          "product-images/*": {
+            "guest": [
+              "get",
+              "list"
+            ],
+            "authenticated": [
+              "get",
+              "list"
+            ],
+            "groupsADMINS": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "category-images/*": {
+            "guest": [
+              "get",
+              "list"
+            ],
+            "authenticated": [
+              "get",
+              "list"
+            ],
+            "groupsADMINS": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "customer-Cimages/*": {
+            "authenticated": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "groupsADMINS": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          }
+        }
       }
     ]
   },
   "version": "1.3",
   "custom": {
-    "API": {
-      "myHttpApi": {
-        "endpoint": "https://0uf694yal2.execute-api.ap-south-1.amazonaws.com/",
-        "region": "ap-south-1",
-        "apiName": "myHttpApi"
-      }
-    },
-    "confirmorder": "https://43dcfazgpegp5epo5ex3pfxmmm0aotup.lambda-url.ap-south-1.on.aws/"
+    "confirmorder": "https://datbjdvxjhnvloqxsnnmpdimhe0ppdol.lambda-url.ap-south-1.on.aws/"
   }
 }

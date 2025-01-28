@@ -39,7 +39,7 @@ const HomePage: React.FC = () => {
     queryKey: ["homePageProducts"],
     queryFn: async (): Promise<any> => {
       try {
-        const response = await axios.get("https://cyqe6qmiba6qin2r5zabaakjim0dxvdk.lambda-url.ap-south-1.on.aws/");
+        const response = await axios.get("https://7usnydoqmwkg4xe55qt4huf3xy0pyezv.lambda-url.ap-south-1.on.aws/");
         return response.data;
       } catch (error) {
         console.error("Error fetching products:", error);
