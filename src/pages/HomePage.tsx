@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import {
   Box,
   Typography,
-  CircularProgress,
   Snackbar,
   IconButton,
   Button,
@@ -14,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import { RootState } from "../state/store";
 import "@fontsource/dm-sans";
 import Hero from "../components/Hero";
-import Spline from "@splinetool/react-spline";
 import axios from "axios";
 import ProductListing from "../components/ProductsListing";
 import TanzoBenefits from "../components/tanzobenefit";
