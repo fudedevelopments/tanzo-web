@@ -19,9 +19,10 @@ import axios from "axios";
 import ProductListing from "../components/ProductsListing";
 import TanzoBenefits from "../components/tanzobenefit";
 import CategoryList from "../components/CategoriesList";
+import NormalLoading from "../components/smallcomponents/normalindicator";
 
 const HomePage: React.FC = () => {
-  const auth = useSelector((state: RootState) => state.auth!.isAuth);
+  const auth = useSelector((state: RootState) => state.auth.isAuth);
   const navigate = useNavigate();
   const [showActionBar, setShowActionBar] = useState(false);
 
@@ -68,9 +69,7 @@ const HomePage: React.FC = () => {
   return (
     <>
       {isProductsLoading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" height="70vh">
-          <CircularProgress />
-        </Box>
+          <NormalLoading />
       ) : isProductsError ? (
         <Box
           display="flex"
@@ -90,10 +89,10 @@ const HomePage: React.FC = () => {
             className="absolute inset-0 w-full h-full overflow-hidden spline-container"
             style={{ clipPath: "inset(0px 0px 70px 0px)", top: -100 }}
           >
-            <Spline
+            {/* <Spline
               scene="https://prod.spline.design/PI0JLDkBeve1P6eP/scene.splinecode"
               className="spline"
-            />
+            /> */}
           </div>
           <Hero onClick={scrollToProducts} />
           <Box style={{ marginTop: "-200px" }}>

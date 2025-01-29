@@ -8,6 +8,8 @@ import { RootState } from "../state/store";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import ImageUploadContainer from "./imageuploadcontainer";
+import { GradientLoader } from "./smallcomponents/loadingindicator";
+import RelatedProducts from "./relatedproducts";
 
 const ProductView = () => {
     const imageUUID = uuidv4();
@@ -23,9 +25,7 @@ const ProductView = () => {
                     id: productId, 
                 }
             );
-            console.log(response);
-            
-            return response.data; 
+            return response.data;
         },
     });
     const [uploadurl, setuploadurl] = useState<string[]>([]);
@@ -66,6 +66,8 @@ const ProductView = () => {
             return response.data;
         }
     })
+
+    
 
 
 
@@ -109,8 +111,8 @@ const ProductView = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50">
-                <p className="text-gray-700 text-xl font-semibold">Loading product details...</p>
+            <div className="flex justify-center items-center h-screen">
+               <GradientLoader/>
             </div>
         );
     }
@@ -242,7 +244,7 @@ const ProductView = () => {
                             >
                                 Buy Now
                             </button>)
-}
+}                   
 
                         {showSnackbar && (
                             <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg">
@@ -251,7 +253,9 @@ const ProductView = () => {
                         )}
                     </div>
                 </div>
+                <RelatedProducts categoryId={fetchedproduct?.product?.categoryId} />
             </div>
+            
         </div>
     );
 };

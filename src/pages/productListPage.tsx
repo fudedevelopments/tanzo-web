@@ -1,42 +1,57 @@
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { client } from "../utils/client";
-
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import NormalLoading from "../components/smallcomponents/normalindicator";
 
 function ProductListPage() {
+  const navigate = useNavigate();
   const { categoryId } = useParams();
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["categoryProducts", categoryId],
-    queryFn: async (): Promise<any> => {
-      const { data: category } = await client.models.Categories.get({ id: categoryId! });
-      const productsData = await category?.products();
-      return {
-        categoryName: category?.name,
-        products: productsData?.data,
-        errors: productsData?.errors,
-      };
-    },
-  });
+  const limit = 10;
+  
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["categoryProducts", categoryId],
+      queryFn: async ({ pageParam }) => {
+        try {
+          const response = await axios.get(
+            `https://xjbbqipjocndfh7itstm6nxs240tsubh.lambda-url.ap-south-1.on.aws/category?categoryId=${categoryId}&limit=${limit}&nextToken=${pageParam}`
+          );
+          console.log(response.data);
+          const fetched = response.data.data;
+          return {
+            products: fetched.products, // Was previously 'product'
+            nextToken: fetched.nextToken
+          };
+        } catch (error) {
+          console.log(error);
+          
+        }
+      },
+      initialPageParam: '',
+      getNextPageParam: (lastPage) => {
+        const token = lastPage?.nextToken;
+        if (!token) {
+          return undefined;
+        }
+        return token;
+      },
+    });
 
   if (isLoading) {
+    return <NormalLoading />;
+  }
+
+  if (isError || data?.pages[0]?.products.error) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-500 mb-4"></div>
-          <p className="text-gray-700 text-xl font-semibold">Loading products...</p>
-        </div>
+        <p className="text-red-500 text-xl font-semibold">
+          Error fetching products. Please try again later.
+        </p>
       </div>
     );
   }
 
-  if (isError || data?.errors) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <p className="text-red-500 text-xl font-semibold">Error fetching products. Please try again later.</p>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -64,39 +79,90 @@ function ProductListPage() {
 
         {/* Main Content */}
         <div className="w-full lg:w-3/4">
-          {/* Category Name */}
-          <h1 className="text-3xl font-extrabold text-gray-800 mb-6">{data.categoryName}</h1>
-
+          <div className="text-2xl mt-3">
+            Category Products
+        </div>
           {/* Product List */}
-          <div className="space-y-6">
-            {data.products?.map((product: any) => (
-              <div
-                key={product.id}
-                className="flex items-center bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow"
-              >
-                {/* Product Image */}
-                <div className="w-24 h-24 bg-gray-100 flex justify-center items-center rounded-md overflow-hidden">
-                  <img src ={product.images[0]} width={300} height={200} />
-                </div>
+          <div className="mt-5">
+            {data?.pages.map((page, pageIndex) => (
+              <div key={pageIndex}>
+                {page?.products.map((product : any) => ( 
+                  <div
+                    key={product.id}
+                    className="flex items-center bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow"
+                  >
+                    {/* Product Image */}
+                    <div className="w-24 h-24 bg-gray-100 flex justify-center items-center rounded-md overflow-hidden">
+                      <img
+                        src={product.image} // Use product.image (singular from your API)
+                        alt={product.name}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
 
-                {/* Product Details */}
-                <div className="ml-4 flex-1">
-                  <h2 className="text-lg font-bold text-gray-800">{product.name}</h2>
-                  <p className="text-gray-600 mt-1">
-                    <span className="text-green-500 font-bold">${product.price}</span>
-                    <span className="text-gray-500 line-through ml-2">
-                      ${product.actualPrice}
-                    </span>
-                  </p>
-                </div>
+                    {/* Product Details */}
+                    <div className="ml-4 flex-1">
+                      <h2 className="text-lg font-bold text-gray-800">{product.name}</h2>
+                      <p className="text-gray-600 mt-1">
+                        <span className="text-green-500 font-bold">${product.price}</span>
+                        <span className="text-gray-500 line-through ml-2">
+                          ${product.actualprice} {/* Match API's actualprice casing */}
+                        </span>
+                      </p>
+                    </div>
 
-                {/* Action Button */}
-                <button className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-2 rounded-lg font-medium hover:scale-105">
-                  Add to Cart
-                </button>
+                    {/* Action Button */}
+                    <button
+                      onClick={() => navigate(`/productview/${product.id}`)} // Ensure productId exists in your data
+                      className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-2 rounded-lg font-medium hover:scale-105"
+                    >
+                      Buy Now
+                    </button>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
+
+          {/* Load More Button */}
+          {hasNextPage && (
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className={`flex items-center justify-center bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-8 py-3 rounded-lg font-semibold hover:scale-105 ${isFetchingNextPage ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+              >
+                {isFetchingNextPage ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8v-8H4z"
+                      ></path>
+                    </svg>
+                    Loading...
+                  </>
+                ) : (
+                  "Load More"
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -15,6 +15,118 @@
     --overlay-color: 255, 255, 255;
 }
 
+ @keyframes animate-gradient {
+   0% { background-position: 0% 50%; }
+   50% { background-position: 100% 50%; }
+   100% { background-position: 0% 50%; }
+ }
+ .animate-gradient {
+   background-size: 300% 300%;
+   animation: animate-gradient 3s ease infinite;
+ }
+
+ .bg-glass {
+     background: rgba(255, 255, 255, 0.05);
+     backdrop-filter: blur(16px);
+     -webkit-backdrop-filter: blur(16px);
+     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+ }
+
+ .bg-glass-scrolled {
+     background: rgba(255, 255, 255, 0.1);
+     backdrop-filter: blur(24px);
+     -webkit-backdrop-filter: blur(24px);
+ }
+
+ .shadow-glass {
+     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+ }
+
+ .shadow-glass-xl {
+     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+ }
+
+ .bg-shine {
+     background-image: linear-gradient(45deg,
+             rgba(255, 255, 255, 0) 45%,
+             rgba(255, 255, 255, 0.3) 50%,
+             rgba(255, 255, 255, 0) 55%);
+ }
+
+ .animate-shine {
+     animation: shine 4s infinite;
+ }
+
+ @keyframes shine {
+     0% {
+         background-position: 100% 50%
+     }
+
+     100% {
+         background-position: 0% 50%
+     }
+ }
+
+ .glass-nav-link {
+     position: relative;
+     overflow: hidden;
+     transition: all 0.3s ease;
+ }
+
+ .glass-nav-link:hover {
+     background: rgba(255, 255, 255, 0.1);
+ }
+
+ .link-underline {
+     position: absolute;
+     bottom: 0;
+     left: 0;
+     width: 0;
+     height: 0px;
+     background: white;
+     transition: width 0.3s ease;
+ }
+
+ .glass-nav-link:hover .link-underline {
+     width: 100%;
+ }
+
+ .glass-button {
+     position: relative;
+     overflow: hidden;
+     transition: all 0.3s ease;
+ }
+
+ .glass-button::before {
+     content: '';
+     position: absolute;
+     top: -50%;
+     left: -50%;
+     width: 200%;
+     height: 200%;
+     background: linear-gradient(45deg,
+             transparent,
+             rgba(255, 255, 255, 0.2),
+             transparent);
+     transform: rotate(45deg);
+ }
+
+ .glass-button:hover::before {
+     animation: slide 1.5s infinite linear;
+ }
+
+ @keyframes slide {
+     0% {
+         transform: translateX(-100%) rotate(45deg)
+     }
+
+     100% {
+         transform: translateX(100%) rotate(45deg)
+     }
+ }
+
+ 
+
 
 /* Base styles */
 .spline-container {

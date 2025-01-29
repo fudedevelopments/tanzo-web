@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { client } from '../utils/client';
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import tanzologo from "../assets/tanzologo.png";
-import hamburgerIcon from "../assets/menu.svg"; // Replace with your custom icon
+import hamburgerIcon from "../assets/menu.svg"; 
 
 function AppBar() {
     const { signOut, user } = useAuthenticator((context) => [context.user]);
@@ -17,7 +17,6 @@ function AppBar() {
     const [scrolled, setScrolled] = useState(false);
     const auth = useSelector((state: RootState) => state.auth.isAuth);
 
-    // Fetch customer data only if authenticated
     const { data: customer, isLoading } = useQuery({
         queryKey: ['getAndCreateUser'],
         queryFn: async () => {
@@ -39,7 +38,6 @@ function AppBar() {
         },
     });
 
-    // Scroll Effect for AppBar
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
@@ -77,98 +75,140 @@ function AppBar() {
     return (
         <>
             <header
-                className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-md bg-blue-200 shadow-lg' : 'bg-blue-200/60 backdrop-blur-none'
-                    }`}
+                className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
+                        ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-300 shadow-xl'
+                        : 'bg-gradient-to-r from-blue-500 via-purple-400 to-pink-300 shadow-xl'
+                    } backdrop-blur-md`}
             >
-                <div className="flex items-center justify-between py-1 px-6 ">
-                    {/* Logo and Title */}
-                    <div className="flex items-center space-x-4">
-                        <img src={tanzologo} alt="Tanzo Gifts Logo" className="w-18 h-24" />
-                        <h1 className="text-4xl font-serif text-black">Tanzo Gifts</h1>
-                    </div>
+                <div className="container mx-auto px-4 py-2">
+                    <div className="flex items-center justify-between">
+                        {/* Logo and Title */}
+                        <div className="flex items-center space-x-4 mb-2">
+                            <img
+                                src={tanzologo}
+                                alt="Tanzo Gifts Logo"
+                                className="w-16 h-16 transition-transform duration-300 hover:scale-105"
+                            />
+                            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+                                Tanzo Gifts
+                            </h1>
+                        </div>
 
-                    {/* Cart Icon and Hamburger Menu (Mobile) */}
-                    <div className="flex items-center space-x-6 md:hidden">
-                        <FaShoppingCart className="w-6 h-6 text-gray-500 cursor-pointer" />
-                        <button onClick={toggleMenu} className="focus:outline-none">
-                            <img src={hamburgerIcon} alt="Menu" className="w-6 h-6" />
-                        </button>
-                    </div>
+                        {/* Navigation Links (Desktop) */}
+                        <nav className="hidden md:flex space-x-8 items-center">
+                            <Link
+                                to="/"
+                                className="text-white/90 hover:text-white font-semibold text-lg px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
+                            >
+                                Home
+                            </Link>
+                            <Link
+                                to="/products"
+                                className="text-white/90 hover:text-white font-semibold text-lg px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
+                            >
+                                Products
+                            </Link>
+                            <Link
+                                to="/aboutus"
+                                className="text-white/90 hover:text-white font-semibold text-lg px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
+                            >
+                                About Us
+                            </Link>
+                            <Link
+                                to="/contactus"
+                                className="text-white/90 hover:text-white font-semibold text-lg px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
+                            >
+                                Contact
+                            </Link>
 
-                    {/* Navigation Links (Desktop) */}
-                    <nav className="hidden md:flex space-x-8 text-lg text-gray-600">
-                        <a href="/" className="hover:text-gray-1000 transition">Home</a>
-                        <a href="/products" className="hover:text-gray-200 transition">Products</a>
-                        <a href="/aboutus" className="hover:text-gray-200 transition">About us</a>
-                        <a href="/contactus" className="hover:text-gray-200 transition">Contact Us</a>
-                        <FaShoppingCart className="w-6 h-6 text-black cursor-pointer" />
-                    </nav>
+                            <FaShoppingCart className="w-7 h-7 text-white ml-4 cursor-pointer transform transition hover:scale-110" />
+                        </nav>
 
-                    {/* Auth Dropdown */}
-                    <div className="relative auth-dropdown flex items-center space-x-4">
-                        {auth ? (
-                            <div className="flex items-center">
-                                <button
-                                    className="flex items-center focus:outline-none"
-                                    onClick={() => setShowAuthBar(!showAuthBar)}
-                                >
-                                    <FaUser className="w-6 h-6 text-gray-500" />
-                                </button>
-                                {showAuthBar && (
-                                    <div className="absolute right-0 top-full mt-2 bg-white text-black shadow-lg p-4 rounded-md space-y-2 z-50">
-                                        <div className="flex justify-between items-center">
-                                            {isLoading ? (
-                                                <p className="text-sm font-medium">Loading...</p>
-                                            ) : (
-                                                <p className="text-sm font-medium">{customer?.email}</p>
-                                            )}
-                                            <button
-                                                onClick={() => setShowAuthBar(false)}
-                                                className="text-gray-500 hover:text-gray-700"
-                                            >
-                                                <FaTimesCircle className="w-4 h-4" />
-                                            </button>
-                                        </div>
+                        {/* Auth Section */}
+                        <div className="flex items-center space-x-6">
+                            <div className="relative auth-dropdown">
+                                {auth ? (
+                                    <div className="flex items-center">
                                         <button
-                                            onClick={signOut}
-                                            className="bg-red-500 text-white py-2 px-4 rounded-md w-full"
+                                            className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300"
+                                            onClick={() => setShowAuthBar(!showAuthBar)}
                                         >
-                                            Sign Out
+                                            <FaUser className="w-6 h-6 text-white" />
                                         </button>
+                                        {showAuthBar && (
+                                            <div className="absolute right-0 top-full mt-2 bg-white backdrop-blur-lg bg-opacity-90 shadow-2xl p-4 rounded-xl space-y-3 min-w-[240px] z-50">
+                                                <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                                                    <p className="text-sm font-medium text-gray-700">
+                                                        {isLoading ? 'Loading...' : customer?.email}
+                                                    </p>
+                                                    <button
+                                                        onClick={() => setShowAuthBar(false)}
+                                                        className="text-gray-400 hover:text-gray-600 transition"
+                                                    >
+                                                        <FaTimesCircle className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                                <button
+                                                    onClick={signOut}
+                                                    className="w-full py-2 px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+                                                >
+                                                    Sign Out
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
+                                ) : (
+                                    <Link to="/login">
+                                        <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-full font-semibold flex items-center space-x-2 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                                            <FaUser className="w-5 h-5" />
+                                            <span>Sign In</span>
+                                        </button>
+                                    </Link>
                                 )}
                             </div>
-                        ) : (
-                            <Link to="/login">
-                                <button className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center">
-                                    <FaUser className="w-5 h-5 mr-2" /> Sign In
-                                </button>
-                            </Link>
-                        )}
+
+                            {/* Mobile Menu Button */}
+                            <button
+                                onClick={toggleMenu}
+                                className="md:hidden p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300"
+                            >
+                                <img src={hamburgerIcon} alt="Menu" className="w-6 h-6 invert" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Mobile Menu */}
                 {menuOpen && (
-                    <nav className="flex flex-col mt-0 space-y-4 md:hidden bg-blue-100 text-gray-600 p-4 shadow-lg rounded-lg">
-                        <a href="/home" className="hover:text-gray-700 transition">Home</a>
-                        <a href="/products" className="hover:text-gray-700 transition">Products</a>
-                        <a href="/custom-orders" className="hover:text-gray-700 transition">Custom Orders</a>
-                        <a href="/aboutus" className="hover:text-gray-700 transition">About Us</a>
-                        <a href="/contact" className="hover:text-gray-700 transition">Contact Us</a>
-                        {auth && (
-                            <button
-                                onClick={signOut}
-                                className="bg-red-500 text-white py-2 px-4 rounded-md w-full"
-                            >
-                                Sign Out
-                            </button>
-                        )}
-                        {!auth && (
-                            <></>
-                        )}
+                    <nav className="md:hidden bg-white/90 backdrop-blur-lg mt-2 p-4 space-y-3 shadow-xl rounded-lg mx-4">
+                        <Link
+                            to="/"
+                            className="block text-gray-700 hover:text-purple-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition"
+                        >
+                            Home
+                        </Link>
+                        <Link
+                            to="/products"
+                            className="block text-gray-700 hover:text-purple-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition"
+                        >
+                            Products
+                        </Link>
+                        <Link
+                            to="/aboutus"
+                            className="block text-gray-700 hover:text-purple-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition"
+                        >
+                            About Us
+                        </Link>
+                        <Link
+                            to="/contactus"
+                            className="block text-gray-700 hover:text-purple-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition"
+                        >
+                            Contact
+                        </Link>
                     </nav>
                 )}
+            
+                
             </header>
 
             <main className="pt-[64px]">

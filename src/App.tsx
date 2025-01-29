@@ -27,13 +27,10 @@ import AdminSettingsPage from "./components/admin/adminsettingspage";
 import AboutUs from "./pages/aboutus";
 import ContactUs from "./pages/contactus";
 import PaymentStatusPage from "./pages/paymetstatuspage";
-
-
-
+import NormalLoading from "./components/smallcomponents/normalindicator";
+import TrackOrder from "./pages/trackorder";
 
 Amplify.configure(outputs);
-
-
 
 function App() {
   const dispath = useDispatch();
@@ -50,10 +47,7 @@ function App() {
   
    if (authStatus === "configuring") {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-        <p className="ml-4 text-blue-500 font-semibold">Loading...</p>
-      </div>
+      <NormalLoading />
     );
   }
   
@@ -70,6 +64,7 @@ function App() {
           <Route path="/paymentshistory" element={<PaymentsHistory />} />
           <Route path="/address" element={<AddressForm />} />
           <Route path="/paymentstatus/:orderId" element={<PaymentStatusPage />} />
+          <Route path="/trackorder" element={<TrackOrder />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/contactus" element={<ContactUs/>} />
         </Route>

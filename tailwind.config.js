@@ -19,7 +19,9 @@ export default {
       }
       ,
      animation: {
-        bounceScroll: 'bounceScroll 3s ease-in-out infinite',
+       bounceScroll: 'bounceScroll 3s ease-in-out infinite',
+        float: 'float 3s ease-in-out infinite',
+        'pulse-slow': 'pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         bounceScroll: {
@@ -28,6 +30,14 @@ export default {
           '50%': { transform: 'translateX(10%)' },
           '75%': { transform: 'translateX(-5%)' },
           '100%': { transform: 'translateX(0%)' }, // Smooth bounce back to original position
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0) translateX(-50%)' },
+          '50%': { transform: 'translateY(-20px) translateX(-50%)' },
+        },
+        pulse: {
+          '0%, 100%': { opacity: 0.4 },
+          '50%': { opacity: 1 },
         },
       },
     },

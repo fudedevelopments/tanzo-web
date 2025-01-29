@@ -38,6 +38,7 @@ const schema = a.schema({
   ]),
 
 
+
   Orders: a.model({
     owner: a.string(),
     orderedtime:a.string(),
@@ -45,9 +46,11 @@ const schema = a.schema({
     product: a.string(),
     cdeatails: a.string(),
     userId: a.string().required(),
+    status: a.string().default("Order Placed"),
+    statusmessage: a.string().default("Your order has been placed. Thank you"),
     customer: a.belongsTo("Customer", "userId")
   }).authorization((allow) => [
-    allow.owner(),
+    allow.owner().to(['read']),
     allow.group('ADMINS'),
   ]),
 
