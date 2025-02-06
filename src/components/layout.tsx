@@ -74,10 +74,10 @@ function AppBar() {
 
     return (
         <>
-            <header
+           <header
                 className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-                        ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-300 shadow-xl'
-                        : 'bg-gradient-to-r from-blue-500 via-purple-400 to-pink-300 shadow-xl'
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600'
+                        : 'bg-gradient-to-r from-blue-500 to-blue-700'
                     } backdrop-blur-md`}
             >
                 <div className="container mx-auto px-4 py-2">
